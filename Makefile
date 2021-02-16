@@ -8,6 +8,9 @@ LINKFLAG = -lsqlite3
 all : pass
 .PHONY : all clean
 
+exec : pass
+	@${BINDIR}/pass
+
 pass : clean ${BINDIR}/utils.o ${BINDIR}/db.o ${BINDIR}/main.o
 	${COMPILER} ${LINKFLAG} -o ${BINDIR}/pass ${BINDIR}/db.o ${BINDIR}/utils.o ${BINDIR}/main.o
 
