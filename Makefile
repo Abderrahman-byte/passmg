@@ -8,7 +8,7 @@ all : pass
 .PHONY : all clean
 
 pass : clean ${BINDIR}/utils.o ${BINDIR}/main.o
-	${COMPILER} -o pass ${BINDIR}/utils.o ${BINDIR}/main.o
+	${COMPILER} -o ${BINDIR}/pass ${BINDIR}/utils.o ${BINDIR}/main.o
 
 ${BINDIR}/utils.o : ${SRCDIR}/utils.cpp
 	${COMPILER} -c -o ${BINDIR}/utils.o ${SRCDIR}/utils.cpp
