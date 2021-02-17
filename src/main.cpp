@@ -4,6 +4,8 @@
 
 #include "utils.h"
 #include "db.h"
+#include "auth.h"
+#include "models.h"
 
 #define DB_PATH "./pass.db"
 
@@ -12,7 +14,7 @@ int main() {
 
 	/* check if database exists */
 	if(!file_exists(DB_PATH)) {
-		init_db(DB_PATH, &db); // Initialize database tables
+		if(init_db(DB_PATH, &db) != 0) return -1 ; // Initialize database tables
 	} else {
 		int rc = sqlite3_open(DB_PATH, &db); // open database
 		if(rc != 0 ) {
@@ -39,7 +41,7 @@ int main() {
 
 		switch(auth_cmd[0]) {
 			case '1':
-				std::cout << "Login is it" << std::endl;
+				login(db);
 				break;
 			case '2':
 				std::cout << "Registration is it" << std::endl;
