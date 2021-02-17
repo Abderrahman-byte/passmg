@@ -11,8 +11,11 @@ all : pass
 exec : pass
 	@${BINDIR}/pass
 
-pass : clean ${BINDIR}/utils.o ${BINDIR}/db.o ${BINDIR}/main.o
-	${COMPILER} ${LINKFLAG} -o ${BINDIR}/pass ${BINDIR}/db.o ${BINDIR}/utils.o ${BINDIR}/main.o
+pass : clean ${BINDIR}/auth.o ${BINDIR}/utils.o ${BINDIR}/db.o ${BINDIR}/main.o
+	${COMPILER} ${LINKFLAG} -o ${BINDIR}/pass ${BINDIR}/auth.o ${BINDIR}/db.o ${BINDIR}/utils.o ${BINDIR}/main.o
+
+${BINDIR}/auth.o : ${SRCDIR}/auth.cpp
+	${COMPILER} -c -o ${BINDIR}/auth.o ${SRCDIR}/auth.cpp
 
 ${BINDIR}/utils.o : ${SRCDIR}/utils.cpp
 	${COMPILER} -c -o ${BINDIR}/utils.o ${SRCDIR}/utils.cpp
