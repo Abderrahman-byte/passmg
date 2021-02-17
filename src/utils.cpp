@@ -1,6 +1,9 @@
 #include <iostream>
 #include <string>
+
+#include <unistd.h>
 #include <sys/stat.h>
+#include <termios.h>
 
 bool file_exists(const std::string& p) {
 	struct stat info;
@@ -12,4 +15,14 @@ void display_auth_menu() {
 	std::cout << "[1] Login" << std::endl;
 	std::cout << "[2] Register" << std::endl;
 	std::cout << "[q] quit" << std::endl;
+}
+
+void echo(bool status=true) {
+	struct termios t;
+	tcgetattr(STDIN_FILENO, &t);
+	
+	if(status) t.c_lflag |= ECHO;
+	else t.c_lflag &= ~ECHO;
+
+	tcsetattr(STDIN_FILENO, TCSANOW, &t);
 }
