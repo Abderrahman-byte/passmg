@@ -11,8 +11,11 @@ all : pass
 exec : pass
 	@${BINDIR}/pass
 
-pass : clean ${BINDIR}/auth.o ${BINDIR}/utils.o ${BINDIR}/db.o ${BINDIR}/main.o
-	${COMPILER} ${LINKFLAG} -o ${BINDIR}/pass ${BINDIR}/auth.o ${BINDIR}/db.o ${BINDIR}/utils.o ${BINDIR}/main.o
+pass : clean ${BINDIR}/models.o ${BINDIR}/auth.o ${BINDIR}/utils.o ${BINDIR}/db.o ${BINDIR}/main.o
+	${COMPILER} ${LINKFLAG} -o ${BINDIR}/pass ${BINDIR}/models.o ${BINDIR}/auth.o ${BINDIR}/db.o ${BINDIR}/utils.o ${BINDIR}/main.o
+
+${BINDIR}/models.o : ${SRCDIR}/models.cpp
+	${COMPILER} -c -o ${BINDIR}/models.o ${SRCDIR}/models.cpp
 
 ${BINDIR}/auth.o : ${SRCDIR}/auth.cpp
 	${COMPILER} -c -o ${BINDIR}/auth.o ${SRCDIR}/auth.cpp
