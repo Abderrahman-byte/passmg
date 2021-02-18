@@ -26,3 +26,13 @@ void echo(bool status=true) {
 
 	tcsetattr(STDIN_FILENO, TCSANOW, &t);
 }
+
+std::string convertToString(char *a, int size) {
+	std::string output;
+
+	for(int i = 0; i < size; i++) {
+		output += a[i];
+	}
+
+	return output;
+} 
