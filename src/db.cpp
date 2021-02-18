@@ -101,3 +101,19 @@ int init_db(const std::string name, sqlite3 **db) {
 	
 	return 0;
 }
+
+/* Insert new user into database */
+int create_user(sqlite3 *db, std::string username, std::string hashed_password) {
+	std::string sql = "INSERT INTO user (username, password) VALUES ('" + username + "', '" + hashed_password + "') ;";
+	int rc ;
+	char *ErrMsg;
+
+	rc = sqlite3_exec(db, sql.c_str(), do_nothing, (void *)NULL, &ErrMsg);
+
+	if(rc != SQLITE_OK) {
+		std::cerr << "[SQL ERROR] " << ErrMsg << std::endl ;
+		return -1;
+	}
+
+	return 0;
+}
