@@ -4,19 +4,14 @@
 
 #include "utils.h"
 #include "models.h"
-
-/* Callback of user select statement*/
-int user_selected(void *user, int argc, char **argv, char **azColName) {
-	std::cout << "callback " << argc << std::endl;
-	for(int i = 0; i < argc; i++) {
-		std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL" ) << std::endl;
-	}
-	return 0;
-} /**/
+#include "crypt.h"
+#include "db.h"
+#include "global_types.h"
 
 /* Login Prompt */ 
-void login(sqlite3 *db) {
-	User *user;
+User login(sqlite3 *db) {
+	User user;
+	struct user_data user_d;
 	std::string username, password, sql;
 	char *zErrMsg = 0;
 	
@@ -31,13 +26,23 @@ void login(sqlite3 *db) {
 	echo(true); // Enable terminal echo	
 	std::cout << std::endl;
 	
-	/*
-	sql += "SELECT id,username,password FROM user WHERE username = '" + username + "';";
-	int rc = sqlite3_exec(db, sql.c_str(), user_selected, (void *)user, &zErrMsg);
-	
-	if( rc != SQLITE_OK ) {
-		std::cerr <<  "SQL error: " <<  zErrMsg << std::endl;
-		sqlite3_free(zErrMsg);
-	} else std::cerr << "Operation done successfully" << std::endl;
-	*/
+
+	user_d = get_user_by_username(username, db); // get user data from database
+
+	// check if user data is not null
+	if(user_d.id.compare("") != 0) {
+		std::string hashed_password = sha256(password); // calculate sha256 hash of the input password
+
+		// compare hashed input password with hash stored in database
+		if(hashed_password.compare(user_d.password) == 0) { 
+			user = User(username, password, hashed_password);
+			std::cout << "[SUCCESS] Logged in successfully" << std::endl;
+		} else {
+			std::cerr << "[WARN] Password or username is wrong" << std::endl;
+		}
+	} else {
+		std::cerr << "[WARN] User " << username << " doesnt exist" << std::endl;
+	}
+
+	return user;
 }
