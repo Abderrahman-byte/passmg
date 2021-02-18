@@ -3,7 +3,8 @@
 * TODO :
 
 - [x] Check if database exists otherwise initialize it.
-- [ ] Create new users.
-- [ ] Authentication.
+- [x] Create new users.
+- [x] Authentication.
 - [ ] CRUD passwords if authenticated
 - [ ] Encrypt/Decrypt user's passwords using his master password. 
+- [ ] Update/Delete users. 
