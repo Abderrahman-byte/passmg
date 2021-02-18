@@ -3,11 +3,31 @@
 #include <functional>
 #include <sqlite3.h>
 #include <fstream>
+#include <cstring>
 
+#include "global_types.h"
 #include "utils.h"
 
-static int table_created(void *s, int argc, char **argv, char **azColName) { return 0; }
+/* Callback That does nothing */
+int do_nothing(void *s, int argc, char **argv, char **azColName) { return 0; }
 
+/* Callback when user data row is returned from select query */
+int user_selected(void *data, int argc, char **argv, char **azColName) {
+	struct user_data *user = (struct user_data *)data;
+
+	for(int i = 0; i < argc; i++) {
+		std::string col = convertToString(azColName[i], strlen(azColName[i]));
+		std::string value = convertToString(argv[i], strlen(argv[i]));
+		
+		if(col.compare("username") == 0) user->username = argv[i] ? value : "";
+		else if(col.compare("password") == 0) user->password = argv[i] ? value : "";
+		else if(col.compare("id") == 0) user->id = argv[i] ? value : "";
+	}
+
+	return 0;
+}
+
+/* Extract on sql statement from sql script stream*/
 std::string extract_statement(std::ifstream& script) {
 	std::string statement;
 
@@ -21,7 +41,24 @@ std::string extract_statement(std::ifstream& script) {
 	return statement;
 }
 
+/* Get user data by username */
+struct user_data get_user_by_username(std::string username, sqlite3 *db) {
+	int rc;
+	struct user_data user;
+	char *ErrMsg;
+	std::string query = "SELECT id, username, password FROM user WHERE username = '" + username + "';";	
+	
+	rc = sqlite3_exec(db, query.c_str(), user_selected, (void *)&user, &ErrMsg);
 
+	if(rc != 0) {
+		std::cerr << "SQL Error : " << ErrMsg << std::endl;
+		throw ErrMsg;
+	}
+
+	return user;
+}
+
+/* Initialize database tables */
 int init_db(const std::string name, sqlite3 **db) {
 	int rc = sqlite3_open(name.c_str(), db); // Open database
 	std::ifstream script; // init database sql script
@@ -44,7 +81,7 @@ int init_db(const std::string name, sqlite3 **db) {
 	
 	// Extract first sql statement from script stream (CREATE TABLE user ...)
 	sql = extract_statement(std::ref(script));
-	rc = sqlite3_exec(*db, sql.c_str(), table_created, (void*)NULL, &zErrMsg);
+	rc = sqlite3_exec(*db, sql.c_str(), do_nothing, (void*)NULL, &zErrMsg);
 
 	/* Check exec error */
 	if(rc != SQLITE_OK) {
@@ -54,7 +91,7 @@ int init_db(const std::string name, sqlite3 **db) {
 
 	// Extract (CREATE TABLE password ...) sql statement from script stream
 	sql = extract_statement(std::ref(script));
-	rc = sqlite3_exec(*db, sql.c_str(), table_created, (void*)NULL, &zErrMsg);
+	rc = sqlite3_exec(*db, sql.c_str(), do_nothing, (void*)NULL, &zErrMsg);
 
 	/* Check exec error */
 	if(rc != SQLITE_OK) {
