@@ -26,6 +26,7 @@ int main() {
 
 	/* Login & Register */
 	while(true) {
+		User user;
 		std::string auth_cmd;
 
 		display_auth_menu();
@@ -41,10 +42,10 @@ int main() {
 
 		switch(auth_cmd[0]) {
 			case '1':
-				login(db);
+				user = login(db);
 				break;
 			case '2':
-				std::cout << "Registration is it" << std::endl;
+				user = signup(db);
 				break;
 			case 'q':
 				sqlite3_close(db);
@@ -52,6 +53,9 @@ int main() {
 			default :
 				std::cerr << "\"" << auth_cmd << "\"" << " is invalid command. try again." << std::endl;
 		}
+		
+		std::cout << std::endl;
+		if(user.is_anonymous()) continue; // On login/register failed
 	}
 
 	return 0;
