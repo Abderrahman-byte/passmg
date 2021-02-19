@@ -28,5 +28,16 @@ public :
 	bool is_anonymous() {
 		return this->anonymous;
 	}
+
+	std::string get_username() {
+		return this->username;
+	}
+
+	void logout() {
+		this->username = "";
+		this->password = "";
+		this->hashed_password = "";
+		this->anonymous = true;
+	}
 };
 #endif
