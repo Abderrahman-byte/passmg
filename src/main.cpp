@@ -56,6 +56,36 @@ int main() {
 		
 		std::cout << std::endl;
 		if(user.is_anonymous()) continue; // On login/register failed
+
+		while(!user.is_anonymous()) {
+			std::string action_cmd;
+			
+			display_actions_menu();
+			std::cout << std::endl << user.get_username() << " > ";
+			std::cin >> action_cmd;
+
+			if(action_cmd.length() != 1) {
+				std::cerr << "\"" << action_cmd << "\"" << " is invalid command. try again." << std::endl;
+				std::cout << std::endl ; /**/
+				continue;
+			}
+
+			switch(action_cmd[0]) {
+				case '8' :
+					user.logout();
+					std::cout << "[SUCCESS] logged out" << std::endl;
+					break;
+
+				case 'q' :
+					sqlite3_close(db);
+					exit(0);
+
+				default :
+					std::cerr << "\"" << action_cmd << "\"" << " is invalid command. try again." << std::endl;
+			}
+
+			std::cout << std::endl;
+		}
 	}
 
 	return 0;
