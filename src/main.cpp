@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sqlite3.h>
 #include <cstdlib>
+#include <fstream>
 
 #include "utils.h"
 #include "db.h"
@@ -10,7 +11,8 @@
 #define DB_PATH "./pass.db"
 
 int main() {
-	sqlite3 *db; 
+	sqlite3 *db;
+	std::ifstream randomness_source;	
 
 	/* check if database exists */
 	if(!file_exists(DB_PATH)) {
@@ -48,6 +50,7 @@ int main() {
 				user = signup(db);
 				break;
 			case 'q':
+				closeIfOpen(randomness_source);
 				sqlite3_close(db);
 				exit(0);
 			default :
@@ -77,9 +80,10 @@ int main() {
 					break;
 
 				case 'q' :
+					closeIfOpen(randomness_source);
 					sqlite3_close(db);
 					exit(0);
-
+				
 				default :
 					std::cerr << "\"" << action_cmd << "\"" << " is invalid command. try again." << std::endl;
 			}
