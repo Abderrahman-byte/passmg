@@ -6,7 +6,7 @@
 #include "models.h"
 #include "crypt.h"
 #include "db.h"
-#include "global_types.h"
+#include "globals.h"
 
 /* Login Prompt */ 
 User login(sqlite3 *db) {

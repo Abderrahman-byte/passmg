@@ -5,7 +5,7 @@
 #include <fstream>
 #include <cstring>
 
-#include "global_types.h"
+#include "globals.h"
 #include "utils.h"
 
 /* Callback That does nothing */

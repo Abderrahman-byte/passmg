@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sqlite3.h>
 
-#include "global_types.h"
+#include "globals.h"
 
 #ifndef _PASS_DB_H_
 #define _PASS_DB_H_
