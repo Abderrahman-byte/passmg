@@ -10,4 +10,5 @@ extern void echo(bool);
 extern std::string convertToString(char *, int);
 extern std::string generateRandomStr(std::ifstream &, unsigned int);
 extern unsigned int randomRange(std::ifstream &, unsigned int, unsigned int);
+extern void closeIfOpen(std::ifstream &);
 #endif

@@ -80,3 +80,8 @@ std::string generateRandomStr(std::ifstream &source, unsigned int len) {
 	
 	return rnd_str;
 }
+
+
+void closeIfOpen(std::ifstream &file) {
+	if(file.is_open()) file.close(); // Check if file is open then close it
+}
