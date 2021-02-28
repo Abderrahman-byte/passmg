@@ -1,9 +1,12 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #include <unistd.h>
 #include <sys/stat.h>
 #include <termios.h>
+
+#include "globals.h"
 
 bool file_exists(const std::string& p) {
 	struct stat info;
@@ -51,4 +54,29 @@ std::string convertToString(char *a, int size) {
 	}
 
 	return output;
-} 
+}
+
+unsigned int randomRange(std::ifstream &source, unsigned int max, unsigned int min = 0) {
+	unsigned char randomBuffer[10];
+	unsigned int sum, rnd;
+
+	source.read((char *)randomBuffer, 10);
+	for(int i = 0; i < 10; i++) sum += (int)randomBuffer[i];
+	rnd = (sum % (max - min + 1)) + min;
+
+	return rnd;
+}
+
+std::string generateRandomStr(std::ifstream &source, unsigned int len) {
+	std::string allowed = ASCII_CHARS;
+	std::string rnd_str;
+
+	if(!source.is_open()) source.open(RANDOM_FILE); // Opening file lazily
+
+	for(int i = 0; i < len; i++) {
+		int index = randomRange(source, allowed.length(), 0);
+		rnd_str += allowed[index];
+	}
+	
+	return rnd_str;
+}
