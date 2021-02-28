@@ -7,6 +7,7 @@
 #include "db.h"
 #include "auth.h"
 #include "models.h"
+#include "core.h"
 
 #define DB_PATH "./pass.db"
 
@@ -84,6 +85,10 @@ int main() {
 					sqlite3_close(db);
 					exit(0);
 				
+				case '3' :
+					addPassword(db, randomness_source, user);
+					break;
+
 				default :
 					std::cerr << "\"" << action_cmd << "\"" << " is invalid command. try again." << std::endl;
 			}
