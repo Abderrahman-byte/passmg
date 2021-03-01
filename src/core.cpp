@@ -29,4 +29,5 @@ void addPassword(sqlite3 *db, std::ifstream &rndSource, User user) {
 	}
 
 	std::cout << "Title : " << title << ", Password : " << password << std::endl;
+	
 }
