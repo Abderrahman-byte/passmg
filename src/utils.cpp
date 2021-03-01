@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <iomanip>
+#include <sstream>
 #include <fstream>
 
 #include <unistd.h>
@@ -84,4 +86,14 @@ std::string generateRandomStr(std::ifstream &source, unsigned int len) {
 
 void closeIfOpen(std::ifstream &file) {
 	if(file.is_open()) file.close(); // Check if file is open then close it
+}
+
+std::string to_hex(unsigned char *data, int len) {
+	std::stringstream ss;
+
+	for(int i = 0 ; i < len; i++) {
+		ss << std::hex << std::setw(2) << std::setfill('0') << (int)data[i] ;
+	}
+
+	return ss.str();
 }
