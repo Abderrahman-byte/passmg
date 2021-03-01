@@ -33,6 +33,10 @@ public :
 		return this->username;
 	}
 
+	std::string get_password() {
+		return this->password;
+	}
+
 	void logout() {
 		this->username = "";
 		this->password = "";
