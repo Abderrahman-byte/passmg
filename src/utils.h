@@ -12,4 +12,6 @@ extern std::string generateRandomStr(std::ifstream &, unsigned int);
 extern unsigned int randomRange(std::ifstream &, unsigned int, unsigned int);
 extern void closeIfOpen(std::ifstream &);
 extern std::string to_hex(unsigned char *, int);
+extern unsigned char* from_hex(std::string);
+extern int parseHex(char);
 #endif
