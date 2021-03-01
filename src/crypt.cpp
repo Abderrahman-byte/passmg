@@ -3,7 +3,12 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <exception>
+#include <string.h>
+
+#include <openssl/conf.h>
 #include <openssl/sha.h>
+#include <openssl/evp.h>
 
 unsigned char* sha256(std::string input) {
 	unsigned char *hashed; // Hashed binary data
@@ -14,11 +19,37 @@ unsigned char* sha256(std::string input) {
 	SHA256_Update(&hash_ctx, input.c_str(), input.size()); /* Hash data */
 	SHA256_Final(hashed, &hash_ctx); /* Finish hasing */
 	
-	/* std::stringstream output;
-	
-	for(int i = 0 ; i < SHA256_DIGEST_LENGTH; i++) {
-		output << std::hex << std::setw(2) << std::setfill('0') << (int)hashed[i];
-	} */
-
 	return hashed;
+}
+
+unsigned char* encrypt_aes_256(std::string data, std::string passphrase, int *ciphertext_len) {
+	unsigned char *key, *plaintext, ciphertext[2048], *output;
+	EVP_CIPHER_CTX *ctx; /* Cipher context to store operation data */
+	int len;
+	
+	plaintext = (unsigned char *)data.c_str(); // data to binary data
+	key = sha256(passphrase); /* Hash the passphrase to be encryption key */
+
+	if((ctx = EVP_CIPHER_CTX_new()) == NULL) /* Init cipher context */
+		throw std::runtime_error("EVP_CIPHER_CTX_new()");
+
+	if(EVP_EncryptInit_ex(ctx, EVP_aes_256_ecb(), NULL, key, NULL) != 1)
+		throw std::runtime_error("EVP_EncryptInit_ex()");
+
+	if(EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, data.length()) != 1)
+		throw std::runtime_error("EVP_EncryptUpdate()");
+	
+	*ciphertext_len = len;
+
+	if(EVP_EncryptFinal_ex(ctx, ciphertext + len, &len) != 1)
+		throw std::runtime_error("EVP_EncryptFinal_ex()");
+
+	*ciphertext_len += len;
+
+	EVP_CIPHER_CTX_free(ctx);
+
+	output = (unsigned char *)malloc(sizeof(unsigned char) * *ciphertext_len);
+	memcpy((void *)output, (void *)ciphertext, *ciphertext_len);
+
+	return output;
 }
