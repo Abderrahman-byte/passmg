@@ -6,11 +6,13 @@
 
 #include "utils.h"
 #include "models.h"
+#include "crypt.h"
 
 void addPassword(sqlite3 *db, std::ifstream &rndSource, User user) {
 	std::string null; // string for flushing data
-	std::string title;
-	std::string password;
+	std::string title, password, encrypted_password;
+	int cipherlen = 1;
+	unsigned char *encrypted_data;
 
 	std::getline(std::cin, null); // flush stdin before asking user for input
 
@@ -28,6 +30,10 @@ void addPassword(sqlite3 *db, std::ifstream &rndSource, User user) {
 		std::cin >> password;
 	}
 
+	encrypted_data = encrypt_aes_256(password, user.get_password(), &cipherlen);
+	encrypted_password = to_hex(encrypted_data, cipherlen);
+
 	std::cout << "Title : " << title << ", Password : " << password << std::endl;
-	
+	std::cout << "Encrypted : " << encrypted_password << std::endl;	
+
 }
