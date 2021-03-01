@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <sqlite3.h>
+#include <openssl/sha.h>
 
 #include "utils.h"
 #include "models.h"
@@ -31,7 +32,7 @@ User login(sqlite3 *db) {
 
 	// check if user data is not null
 	if(user_d.id.compare("") != 0) {
-		std::string hashed_password = sha256(password); // calculate sha256 hash of the input password
+		std::string hashed_password = to_hex(sha256(password), SHA256_DIGEST_LENGTH); // calculate sha256 hash of the input password
 
 		// compare hashed input password with hash stored in database
 		if(hashed_password.compare(user_d.password) == 0) { 
@@ -74,7 +75,7 @@ User signup(sqlite3 *db) {
 	echo(true); // Enable terminal echo	
 	std::cout << std::endl;
 	
-	hashed_password = sha256(password);
+	hashed_password = to_hex(sha256(password), SHA256_DIGEST_LENGTH);
 	if(create_user(db, username, hashed_password) == 0) {
 		user = User(username, password, hashed_password);
 		std::cout << "[SUCCESS] New user has been created" << std::endl;
