@@ -41,6 +41,14 @@ int user_id_selected(void *id, int argc, char **argv, char **azColName) {
 	return 0;
 }
 
+/* Callback if password title exists */
+int password_title_selected(void *exists, int argc, char **argv, char **azColName) {
+	bool *exists_ptr = (bool *)exists;
+	*exists_ptr = true;
+
+	return 0;
+}
+
 /* Extract on sql statement from sql script stream*/
 std::string extract_statement(std::ifstream& script) {
 	std::string statement;
@@ -151,7 +159,37 @@ std::string get_user_id(sqlite3 *db, std::string username) {
 }
 
 /* Check if pasword title exists */
-/* bool password_with_title_exists(sqlite3 *db, std::string password_title, std::string username) {
-	std::string sql = "SELECT id FROM password WHERE title = '' and user_id = '' ;";
-	return false;
-} */
+bool password_with_title_exists(sqlite3 *db, std::string title, std::string username) {
+	bool exists = false;
+	std::string user_id = get_user_id(db, username), sql ;
+	int rc;
+	char *ErrMsg;
+
+	if(user_id.compare("") == 0) return false;	
+
+	sql = "SELECT id FROM password WHERE title = '" + title + "' AND user_id = " + user_id + ";";
+	rc = sqlite3_exec(db, sql.c_str(), password_title_selected, (void *)&exists, &ErrMsg);
+
+	if(rc != SQLITE_OK) {
+		std::cerr << "[SQL ERROR] " << ErrMsg << std::endl;
+		return false;
+	}
+
+	return exists;
+}
+
+int insert_password(sqlite3 *db, std::string user_id, std::string title, std::string content) {
+	std::string sql;
+	int rc;
+	char *ErrMsg;
+
+	sql = "INSERT INTO password (user_id, title, content) VALUES (" + user_id + ", '" + title + "', '" + content + "');";
+	rc = sqlite3_exec(db, sql.c_str(), do_nothing, NULL, &ErrMsg);
+
+	if(rc != SQLITE_OK) {
+		std::cerr << "[SQL ERROR] " << ErrMsg << std::endl;
+		return -1;
+	}
+
+	return 0;
+}
