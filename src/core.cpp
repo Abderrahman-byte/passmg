@@ -50,3 +50,11 @@ void addPassword(sqlite3 *db, std::ifstream &rndSource, User user) {
 	else 
 		std::cout << "[FAILED] Couldnt save new password into database" << std::endl;
 }
+
+void getPasswordsList(sqlite3 *db, User user) {
+	std::vector<std::string> pws_list = get_user_passwords_list(db, get_user_id(db, user.get_username()));
+	
+	for(int i = 0; i < pws_list.size(); i++) {
+		std::cout << "\t[*] " << pws_list[i] << std::endl;
+	}
+}

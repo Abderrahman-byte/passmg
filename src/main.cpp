@@ -85,6 +85,9 @@ int main() {
 					sqlite3_close(db);
 					exit(0);
 				
+				case '1' :
+					getPasswordsList(db, user);
+					break;
 				case '3' :
 					addPassword(db, randomness_source, user);
 					break;
