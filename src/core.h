@@ -7,5 +7,6 @@
 #define _PASS_CORE_H_
 
 extern void addPassword(sqlite3 *, std::ifstream &, User);
+extern void getPasswordsList(sqlite3 *, User);
 
 #endif
