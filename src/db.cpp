@@ -27,6 +27,20 @@ int user_selected(void *data, int argc, char **argv, char **azColName) {
 	return 0;
 }
 
+/* Callback when user id is selected */
+int user_id_selected(void *id, int argc, char **argv, char **azColName) {
+	std::string *id_data = (std::string *)id;
+
+	for(int i = 0; i < argc; i++) {
+		std::string col = convertToString(azColName[i], strlen(azColName[i]));
+		std::string value = convertToString(argv[i], strlen(argv[i]));
+
+		if(col.compare("id") == 0) *id_data = value;
+	}
+
+	return 0;
+}
+
 /* Extract on sql statement from sql script stream*/
 std::string extract_statement(std::ifstream& script) {
 	std::string statement;
@@ -117,3 +131,27 @@ int create_user(sqlite3 *db, std::string username, std::string hashed_password) 
 
 	return 0;
 }
+
+/* get id of a user */
+std::string get_user_id(sqlite3 *db, std::string username) {
+	std::string id = "";
+	std::string sql = "SELECT id FROM user WHERE username = '" + username + "';";
+
+	int rc;
+	char *ErrMsg;
+
+	rc = sqlite3_exec(db, sql.c_str(), user_id_selected, (void *)&id, &ErrMsg);
+
+	if(rc != SQLITE_OK) {
+		std::cerr << "[SQL ERROR] " << ErrMsg << std::endl ;
+	       	return "";
+	}
+
+	return id;
+}
+
+/* Check if pasword title exists */
+/* bool password_with_title_exists(sqlite3 *db, std::string password_title, std::string username) {
+	std::string sql = "SELECT id FROM password WHERE title = '' and user_id = '' ;";
+	return false;
+} */
