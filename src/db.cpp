@@ -64,6 +64,20 @@ int passwords_list_selected(void *list, int argc, char **argv, char **azColName)
 	return 0;
 }
 
+/* Callback when password content selected */
+int password_content_selected(void *content, int argc, char **argv, char **azColName) {
+	std::string *output = (std::string *)content;
+
+	for(int i = 0; i < argc; i++) {	
+		std::string col = convertToString(azColName[i], strlen(azColName[i]));
+		std::string value = convertToString(argv[i], strlen(argv[i]));
+
+		if(col.compare("content") == 0) *output = value;
+	}
+
+	return 0;
+}
+
 /* Extract on sql statement from sql script stream*/
 std::string extract_statement(std::ifstream& script) {
 	std::string statement;
@@ -223,4 +237,21 @@ std::vector<std::string> get_user_passwords_list(sqlite3 *db, std::string user_i
 	}	
 
 	return passwords_list;
+}
+
+std::string get_password_content(sqlite3 *db, std::string user_id, std::string title) {
+	std::string content;
+	std::string sql;
+	int rc;
+	char *ErrMsg;
+	
+	sql = "SELECT content FROM password WHERE user_id = " + user_id + " AND title = '" + title + "' ;";
+	rc = sqlite3_exec(db, sql.c_str(), password_content_selected, (void *)&content, &ErrMsg);
+
+	if(rc != SQLITE_OK) {
+		std::cerr << "[SQL ERROR] " << ErrMsg << std::endl;
+		return "";
+	}
+
+	return content;
 }
