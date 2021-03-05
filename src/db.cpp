@@ -4,6 +4,7 @@
 #include <sqlite3.h>
 #include <fstream>
 #include <cstring>
+#include <vector>
 
 #include "globals.h"
 #include "utils.h"
@@ -46,6 +47,20 @@ int password_title_selected(void *exists, int argc, char **argv, char **azColNam
 	bool *exists_ptr = (bool *)exists;
 	*exists_ptr = true;
 
+	return 0;
+}
+
+/* Callback when passwords list selected */
+int passwords_list_selected(void *list, int argc, char **argv, char **azColName) {
+	std::vector<std::string> *pw_list = (std::vector<std::string> *)list;
+	
+	for(int i = 0; i < argc; i++) {
+		std::string col = convertToString(azColName[i], strlen(azColName[i]));
+		std::string value = convertToString(argv[i], strlen(argv[i]));
+
+		if(col.compare("title") == 0) pw_list->push_back(value);
+	}
+	
 	return 0;
 }
 
@@ -192,4 +207,20 @@ int insert_password(sqlite3 *db, std::string user_id, std::string title, std::st
 	}
 
 	return 0;
+}
+
+std::vector<std::string> get_user_passwords_list(sqlite3 *db, std::string user_id) {
+	std::vector<std::string> passwords_list;
+	std::string sql;
+	int rc;
+	char *ErrMsg;
+	
+	sql = "SELECT title FROM password WHERE user_id = " + user_id + ";";
+	rc = sqlite3_exec(db, sql.c_str(), passwords_list_selected, (void *)&passwords_list, &ErrMsg);
+	
+	if(rc != SQLITE_OK) {
+		std::cerr << "[SQL ERROR] " << ErrMsg << std::endl;
+	}	
+
+	return passwords_list;
 }
