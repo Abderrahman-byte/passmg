@@ -91,7 +91,9 @@ int main() {
 				case '3' :
 					addPassword(db, randomness_source, user);
 					break;
-
+				case '2' :
+					getUserPassword(db, user);
+					break;
 				default :
 					std::cerr << "\"" << action_cmd << "\"" << " is invalid command. try again." << std::endl;
 			}

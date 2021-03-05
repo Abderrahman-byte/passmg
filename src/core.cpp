@@ -58,3 +58,30 @@ void getPasswordsList(sqlite3 *db, User user) {
 		std::cout << "\t[*] " << pws_list[i] << std::endl;
 	}
 }
+
+void getUserPassword(sqlite3 *db, User user) {
+	unsigned char* encrypted_data;
+	std::string encrypted_password, title, password;
+	
+	std::cout << "Enter password title : ";
+	std::cin >> title;
+
+	if(!password_with_title_exists(db, title, user.get_username())) {
+		std::cout << "[FAILED] Password with title \"" << title << "\" doesn\'t exists";
+		return ;
+	}
+		
+	encrypted_password = get_password_content(db, get_user_id(db, user.get_username()), title);
+
+	if (encrypted_password.compare("") == 0) {
+		std::cerr << "[FAILED] Couldn't get password with title " << title << std::endl;
+		return;
+	}
+
+	std::cout << "Encrypted password : " << encrypted_password << std::endl;
+	encrypted_data = from_hex(encrypted_password);
+	password = decrypt_aes_256(encrypted_data, encrypted_password.length() / 2, user.get_password());
+
+
+	std::cout << "password : " << password << std::endl;
+}

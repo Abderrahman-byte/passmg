@@ -8,5 +8,6 @@
 
 extern void addPassword(sqlite3 *, std::ifstream &, User);
 extern void getPasswordsList(sqlite3 *, User);
+extern void getUserPassword(sqlite3 *, User);
 
 #endif
