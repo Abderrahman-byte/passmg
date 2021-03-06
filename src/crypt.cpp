@@ -77,7 +77,7 @@ std::string decrypt_aes_256(unsigned char *ciphertext, int ciphertext_len, std::
 	plaintext_len = len;
 	
 	if(EVP_DecryptFinal_ex(ctx, plaintext + len, &len) != 1)
-		// throw std::runtime_error("EVP_DecryptFinal_ex()");
+		throw std::runtime_error("EVP_DecryptFinal_ex()");
 
 	plaintext_len += len;
 	
