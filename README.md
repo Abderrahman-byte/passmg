@@ -1,10 +1,18 @@
 # P A S S
 
-* TODO :
+This mini-project is a command line password manager. (The name is just a place holder)
 
-- [x] Check if database exists otherwise initialize it.
-- [x] Create new users.
-- [x] Authentication.
-- [x] CRUD passwords if authenticated.
-- [x] Encrypt/Decrypt user's passwords using his master password. 
-- [x] Update/Delete users. 
+## Instructions to Install
+
+install dependencies :
+
+```shell
+apt install -y libssl-dev // debian-based
+dnf install -y openssl-devel // for rhel-based
+```
+
+compiling and installing binary files :
+
+```shell
+make install
+```
