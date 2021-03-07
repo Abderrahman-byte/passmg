@@ -33,6 +33,7 @@ ${BINDIR}/%.o : ${SRCDIR}/%.cpp
 	${COMPILER} -D INIT_SCRIPT="${INIT_SCRIPT}" -D DB_PATH="${DB_PATH}" -c -o $@ $^
 
 clean :
-	@touch ${BINDIR}/.tmp
+	@mkdir -p ${BINDIR}/.tmp
+	@rmdir ${BINDIR}/.tmp
 	@rm -f ${BINDIR}/*
 	@echo "[*] Binary file is removed"
