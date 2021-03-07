@@ -115,3 +115,31 @@ void DropPassword(sqlite3 *db, User user) {
 	else
 		std::cout << "[FAILED] Couldn't delete password" << std::endl;
 }
+
+User ChangeUsername(sqlite3 *db, User user) {
+	std::string new_username, null;
+	int rc;
+
+	do {
+		std::getline(std::cin, null);
+		std::cout << "Enter new username : " ;
+		std::cin >> new_username;
+
+		if(get_user_by_username(new_username, db).id.compare("") != 0) {
+			std::cout << "[FAILED] Username \'" << new_username  << "\' already used. try again" << std::endl;
+			new_username = "";
+		} else if(new_username.length() < 6) {
+			std::cout << "[FAILED] Username is too short. try again" << std::endl;	
+			new_username = "";
+		}
+
+	} while(new_username.compare("") == 0);
+
+	rc = update_user_data(db, get_user_id(db, user.get_username()), new_username, user.get_hashed_password());
+	if(rc == 0) {
+		user = User(new_username, user.get_password(), user.get_hashed_password());
+		std::cout << "[SUCCESS] username has been changed to \'" << new_username << "\'." << std::endl;
+	}
+		
+	return user;
+}

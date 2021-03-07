@@ -60,7 +60,7 @@ int main() {
 		
 		std::cout << std::endl;
 		if(user.is_anonymous()) continue; // On login/register failed
-
+		
 		while(!user.is_anonymous()) {
 			std::string action_cmd;
 			
@@ -96,6 +96,9 @@ int main() {
 					break;
 				case '4' :
 					DropPassword(db, user);
+					break;
+				case '5' :
+					user = ChangeUsername(db, user);
 					break;
 				default :
 					std::cerr << "\"" << action_cmd << "\"" << " is invalid command. try again." << std::endl;
