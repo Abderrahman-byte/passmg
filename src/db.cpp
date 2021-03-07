@@ -285,8 +285,24 @@ int update_user_data(sqlite3 *db, std::string user_id, std::string new_username,
 
 	sql = "UPDATE user SET username = \'" + new_username + "\', password = \'" + new_password + "\' ";
 	sql += "WHERE id = " + user_id + ";" ;
-
 	rc = sqlite3_exec(db, sql.c_str(), do_nothing, NULL, &ErrMsg) ;
+
+	if(rc != SQLITE_OK) {
+		std::cerr << "[SQL ERROR] " << ErrMsg << std::endl;
+		return -1;
+	}
+
+	return 0;
+}
+
+int update_password_content(sqlite3 *db, std::string user_id, std::string title, std::string content) {
+	std::string sql;
+	int rc;
+	char *ErrMsg;
+
+	sql = "UPDATE password SET content = \'" + content + "\' WHERE user_id = " + user_id + " AND title = \'" + title + "\';";
+	rc = sqlite3_exec(db, sql.c_str(), do_nothing, NULL, &ErrMsg);
+
 	if(rc != SQLITE_OK) {
 		std::cerr << "[SQL ERROR] " << ErrMsg << std::endl;
 		return -1;
