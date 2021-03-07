@@ -83,10 +83,35 @@ void getUserPassword(sqlite3 *db, User user) {
 		return;
 	}
 
-	std::cout << "Encrypted password : " << encrypted_password << std::endl;
 	encrypted_data = from_hex(encrypted_password);
 	password = decrypt_aes_256(encrypted_data, encrypted_password.length() / 2, user.get_password());
+	
+	std::cout << "\ttitle : " << title << std::endl;
+	std::cout << "\tpassword : " << password << std::endl;
+}
 
+void DropPassword(sqlite3 *db, User user) {
+	std::string title, null;
+	
+	do {
+		std::getline(std::cin, null); // flush stdin before asking user for input	
+		std::cout << "Enter title of the password to be deleted : ";
+		std::cin >> title;
 
-	std::cout << "password : " << password << std::endl;
+	} while (title.compare("") == 0);
+
+	if(!password_with_title_exists(db, title, user.get_username())) {
+		std::cerr << "[FAILED] Password with title \'" << title << "\' doesn\'t exists." << std::endl;
+		return;
+	}
+	
+	std::getline(std::cin, null); // flush stdin before asking user for input	
+	std::cout << "Do you really want to delete \'" << title << "\' password ? [y/n] : ";
+
+	if(getchar() != 'y') return ;
+
+	if(delete_password(db, user.get_username(), title) == 0)
+		std::cout << "[SUCCESS] Password \'" << title << "\' has been deleted" << std::endl;	
+	else
+		std::cout << "[FAILED] Couldn't delete password" << std::endl;
 }

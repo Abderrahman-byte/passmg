@@ -94,6 +94,9 @@ int main() {
 				case '2' :
 					getUserPassword(db, user);
 					break;
+				case '4' :
+					DropPassword(db, user);
+					break;
 				default :
 					std::cerr << "\"" << action_cmd << "\"" << " is invalid command. try again." << std::endl;
 			}
