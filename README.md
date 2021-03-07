@@ -5,6 +5,6 @@
 - [x] Check if database exists otherwise initialize it.
 - [x] Create new users.
 - [x] Authentication.
-- [ ] CRUD passwords if authenticated
-- [ ] Encrypt/Decrypt user's passwords using his master password. 
+- [x] CRUD passwords if authenticated.
+- [x] Encrypt/Decrypt user's passwords using his master password. 
 - [ ] Update/Delete users. 
