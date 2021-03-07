@@ -100,6 +100,9 @@ int main() {
 				case '5' :
 					user = ChangeUsername(db, user);
 					break;
+				case '6' :
+					user = ChangeMasterPassword(db, user);
+					break;
 				default :
 					std::cerr << "\"" << action_cmd << "\"" << " is invalid command. try again." << std::endl;
 			}
