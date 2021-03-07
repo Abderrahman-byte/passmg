@@ -17,4 +17,5 @@ extern bool password_with_title_exists(sqlite3 *, std::string, std::string);
 extern int insert_password(sqlite3 *, std::string, std::string, std::string);
 extern std::vector<std::string> get_user_passwords_list(sqlite3 *, std::string);
 extern std::string get_password_content(sqlite3 *, std::string, std::string);
+extern int delete_password(sqlite3 *, std::string, std::string);
 #endif

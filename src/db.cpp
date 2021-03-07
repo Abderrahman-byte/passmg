@@ -255,3 +255,25 @@ std::string get_password_content(sqlite3 *db, std::string user_id, std::string t
 
 	return content;
 }
+
+int delete_password(sqlite3 *db, std::string username, std::string title) {
+	std::string user_id, sql;
+	int rc;
+	char *ErrMsg;
+
+	user_id = get_user_id(db, username);
+	if(user_id.compare("") == 0) {
+		std::cout << "[ERROR] user with username \'" << username << "\' doesn't exists" << std::endl;
+		return -1;
+	}
+
+	sql = "DELETE FROM password WHERE user_id = " + user_id + " AND title = \'" + title + "\';" ;
+	rc = sqlite3_exec(db, sql.c_str(), do_nothing, NULL, &ErrMsg) ;
+
+	if(rc != SQLITE_OK) {
+		std::cerr << "[SQL ERROR] " << ErrMsg << std::endl;
+		return -1;
+	}
+
+	return 0;
+}
