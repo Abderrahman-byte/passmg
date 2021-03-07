@@ -54,6 +54,11 @@ void addPassword(sqlite3 *db, std::ifstream &rndSource, User user) {
 void getPasswordsList(sqlite3 *db, User user) {
 	std::vector<std::string> pws_list = get_user_passwords_list(db, get_user_id(db, user.get_username()));
 	
+	if(pws_list.size() == 0) {
+		std::cout << "\t[!] No passwords has been saved in your account." << std::endl;
+		return ;
+	}
+
 	for(int i = 0; i < pws_list.size(); i++) {
 		std::cout << "\t[*] " << pws_list[i] << std::endl;
 	}
@@ -67,7 +72,7 @@ void getUserPassword(sqlite3 *db, User user) {
 	std::cin >> title;
 
 	if(!password_with_title_exists(db, title, user.get_username())) {
-		std::cout << "[FAILED] Password with title \"" << title << "\" doesn\'t exists";
+		std::cout << "[FAILED] Password with title \"" << title << "\" doesn\'t exists" << std::endl;
 		return ;
 	}
 		

@@ -51,11 +51,11 @@ User login(sqlite3 *db) {
 User signup(sqlite3 *db) {
 	User user;
 	struct user_data user_d ;
-	std::string username, password, hashed_password;
+	std::string username, password, re_password, hashed_password;
 
 	getchar(); // Flush stdin
 
-	std::cout << "username : " ;
+	std::cout << "Enter your username : " ;
 	std::getline(std::cin, username);
 	user_d = get_user_by_username(username, db); // check if username already exists
 
@@ -68,12 +68,24 @@ User signup(sqlite3 *db) {
 		std::cerr << "[WARN] Minimum length of username is : 6" << std::endl;
 		return user;
 	}
-
+	
+	/* Enter The password the first time */
 	echo(false); // Disable terminal echo
-	std::cout << "password : " ;
+	std::cout << "Enter new password : " ;
 	std::getline(std::cin, password);
+	std::cout << std::endl;
+
+	/* Confirm the password */
+	std::cout << "Confirm your password : " ;
+	std::getline(std::cin, re_password);
 	echo(true); // Enable terminal echo	
 	std::cout << std::endl;
+
+	/* Check that the passwords matchs */
+	if(password.compare(re_password) != 0) {
+		std::cerr << "[FAILED] Passwords doen't match." << std::endl;
+		return user;
+	}
 	
 	hashed_password = to_hex(sha256(password), SHA256_DIGEST_LENGTH);
 	if(create_user(db, username, hashed_password) == 0) {
