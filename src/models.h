@@ -11,7 +11,7 @@ public :
 	User(std::string username, std::string password, std::string hashed_password) {
 		this->username = username;
 		this->password = password;
-		this->hashed_password;
+		this->hashed_password = hashed_password;
 		this->anonymous = false;
 	}
 
@@ -22,6 +22,7 @@ public :
 	User(User &u) {
 		this->username = u.username;
 		this->password = u.password;
+		this->hashed_password = u.hashed_password;
 		this->anonymous = u.anonymous;
 	}
 
@@ -35,6 +36,10 @@ public :
 
 	std::string get_password() {
 		return this->password;
+	}
+
+	std::string get_hashed_password() {
+		return this->hashed_password;
 	}
 
 	void logout() {
