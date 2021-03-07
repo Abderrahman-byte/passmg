@@ -206,3 +206,17 @@ User ChangeMasterPassword(sqlite3 *db, User user) {
 
 	return user;
 }
+
+void DeleteAccount(sqlite3 *db, User &user) {
+	std::string user_id = get_user_id(db, user.get_username());
+	std::vector<std::string> pws_list = get_user_passwords_list(db, user_id);
+
+	for(int i = 0; i < pws_list.size(); i++)
+		delete_password(db, user.get_username(), pws_list[i]);
+
+	std::cout << "[*] User passwords has been deleted." << std::endl;
+	
+	delete_user(db, user_id);
+	std::cout << "[*] User account has been deleted." << std::endl;
+	user.logout();
+}

@@ -12,4 +12,5 @@ extern void getUserPassword(sqlite3 *, User);
 extern void DropPassword(sqlite3 *, User);
 extern User ChangeUsername(sqlite3 *, User);
 extern User ChangeMasterPassword(sqlite3 *, User);
+extern void DeleteAccount(sqlite3 *, User &);
 #endif
