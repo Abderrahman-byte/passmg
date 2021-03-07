@@ -310,3 +310,19 @@ int update_password_content(sqlite3 *db, std::string user_id, std::string title,
 
 	return 0;
 }
+
+int delete_user(sqlite3 *db, std::string user_id) {
+	std::string sql;
+	int rc;
+	char *ErrMsg;
+
+	sql = "DELETE FROM user WHERE id = "  + user_id + " ;";
+	rc = sqlite3_exec(db, sql.c_str(), do_nothing, NULL, &ErrMsg);
+
+	if(rc != SQLITE_OK) {
+		std::cerr << "[SQL ERROR] " << ErrMsg << std::endl;
+		return -1;
+	}
+
+	return 0;
+}

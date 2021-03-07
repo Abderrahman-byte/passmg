@@ -20,4 +20,5 @@ extern std::string get_password_content(sqlite3 *, std::string, std::string);
 extern int delete_password(sqlite3 *, std::string, std::string);
 extern int update_user_data(sqlite3 *, std::string, std::string, std::string);
 extern int update_password_content(sqlite3 *, std::string, std::string, std::string);
+extern int delete_user(sqlite3 *, std::string);
 #endif
