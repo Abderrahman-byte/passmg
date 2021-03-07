@@ -277,3 +277,20 @@ int delete_password(sqlite3 *db, std::string username, std::string title) {
 
 	return 0;
 }
+
+int update_user_data(sqlite3 *db, std::string user_id, std::string new_username, std::string new_password) {
+	std::string sql;
+	int rc;
+	char *ErrMsg;
+
+	sql = "UPDATE user SET username = \'" + new_username + "\', password = \'" + new_password + "\' ";
+	sql += "WHERE id = " + user_id + ";" ;
+
+	rc = sqlite3_exec(db, sql.c_str(), do_nothing, NULL, &ErrMsg) ;
+	if(rc != SQLITE_OK) {
+		std::cerr << "[SQL ERROR] " << ErrMsg << std::endl;
+		return -1;
+	}
+
+	return 0;
+}
