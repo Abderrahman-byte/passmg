@@ -123,12 +123,12 @@ int init_db(const std::string name, sqlite3 **db) {
         }
 	
 	/* Check if init db script exists */
-	if(!file_exists("./pass.sql")) {
+	if(!file_exists(INIT_SCRIPT)) {
 		std::cerr << "[ERROR] Cant't find initialization script." << std::endl;
 		return -1;
 	} 
 
-	script.open("./pass.sql"); // open init sql script
+	script.open(INIT_SCRIPT); // open init sql script
 	
 	// Extract first sql statement from script stream (CREATE TABLE user ...)
 	sql = extract_statement(std::ref(script));
@@ -148,7 +148,7 @@ int init_db(const std::string name, sqlite3 **db) {
 	if(rc != SQLITE_OK) {
 		std::cerr << "[ERROR] SQL error create 'password' : " << zErrMsg << std::endl;
 		return -1;
-	} else std::cout << "[*] Passwords table has been created" << std::endl;
+	} else std::cout << "[*] Passwords table has been created" << std::endl << std::endl;
 	
 	return 0;
 }

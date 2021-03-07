@@ -8,8 +8,7 @@
 #include "auth.h"
 #include "models.h"
 #include "core.h"
-
-#define DB_PATH "./pass.db"
+#include "globals.h"
 
 int main() {
 	sqlite3 *db;

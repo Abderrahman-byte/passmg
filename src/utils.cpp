@@ -10,9 +10,18 @@
 
 #include "globals.h"
 
-bool file_exists(const std::string& p) {
-	struct stat info;
-	return (stat(p.c_str(), &info) == 0) ;
+bool file_exists(const std::string p) {
+	bool stat;
+	/*struct stat info;
+	return (stat(p.c_str(), &info) == 0) ;*/
+	std::ifstream file;
+	file.open(p);
+
+	if(file.is_open()) stat = true;
+	else stat = false;
+
+	file.close();
+	return stat;
 }
 
 void display_auth_menu() {
