@@ -14,7 +14,6 @@ User login(sqlite3 *db) {
 	User user;
 	struct user_data user_d;
 	std::string username, password;
-	char *zErrMsg = 0;
 	
 	getchar(); // Flush stdin
 
