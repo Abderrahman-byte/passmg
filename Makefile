@@ -6,6 +6,7 @@ SRCDIR = ./src
 LINKFLAG = -lsqlite3 -lcrypto
 OBJECTFILES = ${BINDIR}/core.o ${BINDIR}/crypt.o ${BINDIR}/auth.o ${BINDIR}/utils.o ${BINDIR}/db.o ${BINDIR}/main.o
 DB_PATH = \"${HOME}/.local/share/pass/pass.db\"
+DIRNAME = ${HOME}/.local/share/pass/
 INIT_SCRIPT = \"${HOME}/.local/share/pass/pass.sql\"
 USER_ID := $(shell id -u)
 
@@ -22,11 +23,11 @@ exec : pass
 	@${BINDIR}/pass
 
 pass : deny_if_root clean ${OBJECTFILES}
+	@if [ ! -d ${DIRNAME} ] ; then mkdir -p ${DIRNAME} ; fi
+	cp ./pass.sql ${DIRNAME}
 	${COMPILER} ${LINKFLAG} -o ${BINDIR}/pass ${OBJECTFILES}
 
 install : clean pass
-	mkdir -p ~/.local/share/pass
-	cp ./pass.sql ~/.local/share/pass
 	cp ./bin/pass ~/.local/bin/
 
 ${BINDIR}/%.o : ${SRCDIR}/%.cpp
