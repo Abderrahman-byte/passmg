@@ -8,7 +8,7 @@ install dependencies :
 
 ```shell
 apt install -y libssl-dev // debian-based
-dnf install -y openssl-devel // for rhel-based
+dnf install -y openssl-devel libsqlite3x-devel // for rhel-based
 ```
 
 compiling and installing binary files :
