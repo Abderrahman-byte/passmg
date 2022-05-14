@@ -7,7 +7,7 @@ This mini-project is a command line password manager. (The name is just a place 
 install dependencies :
 
 ```shell
-apt install -y libssl-dev // debian-based
+apt install -y libssl-dev libsqlite3-devel // debian-based
 dnf install -y openssl-devel libsqlite3x-devel // for rhel-based
 ```
 
