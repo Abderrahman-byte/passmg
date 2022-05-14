@@ -112,27 +112,26 @@ struct user_data get_user_by_username(std::string username, sqlite3 *db) {
 /* Initialize database tables */
 int init_db(const std::string name, sqlite3 **db) {
 	int rc = sqlite3_open(name.c_str(), db); // Open database
-	std::ifstream script; // init database sql script
-	std::string sql;
 	char *zErrMsg;
+	// This is bad looking
+	std::string sql[] = {std::string("CREATE TABLE user ( ") +
+							 std::string("id INTEGER PRIMARY KEY AUTOINCREMENT, ") +
+							 std::string("username VARCHAR(200) UNIQUE NOT NULL, ") +
+							 std::string("password TEXT NOT NULL ); "),
+						 std::string("CREATE TABLE password ( ") +
+							 std::string("id INTEGER PRIMARY KEY AUTOINCREMENT, ") +
+							 std::string("title VARCHAR(200) NOT NULL, ") +
+							 std::string("user_id INTEGER REFERENCES user(id), ") +
+							 std::string("content TEXT NOT NULL, ") +
+							 std::string("UNIQUE (title, user_id) );")};
 
 	/* Check open db error */
 	if( rc ) {
 		std::cerr << "[ERROR] Can't open database: " << sqlite3_errmsg(*db) << std::endl;
 		return -1;	
-        }
+	}
 	
-	/* Check if init db script exists */
-	if(!file_exists(INIT_SCRIPT)) {
-		std::cerr << "[ERROR] Cant't find initialization script." << std::endl;
-		return -1;
-	} 
-
-	script.open(INIT_SCRIPT); // open init sql script
-	
-	// Extract first sql statement from script stream (CREATE TABLE user ...)
-	sql = extract_statement(std::ref(script));
-	rc = sqlite3_exec(*db, sql.c_str(), do_nothing, (void*)NULL, &zErrMsg);
+	rc = sqlite3_exec(*db, sql[0].c_str(), do_nothing, (void*)NULL, &zErrMsg);
 
 	/* Check exec error */
 	if(rc != SQLITE_OK) {
@@ -140,9 +139,7 @@ int init_db(const std::string name, sqlite3 **db) {
 		return -1;
 	} else std::cout << "[*] Users table has been created" << std::endl;
 
-	// Extract (CREATE TABLE password ...) sql statement from script stream
-	sql = extract_statement(std::ref(script));
-	rc = sqlite3_exec(*db, sql.c_str(), do_nothing, (void*)NULL, &zErrMsg);
+	rc = sqlite3_exec(*db, sql[1].c_str(), do_nothing, (void*)NULL, &zErrMsg);
 
 	/* Check exec error */
 	if(rc != SQLITE_OK) {

@@ -7,7 +7,6 @@ LINKFLAG = -ggdb -Wall -lsqlite3 -lcrypto
 OBJECTFILES = ${BINDIR}/core.o ${BINDIR}/crypt.o ${BINDIR}/auth.o ${BINDIR}/utils.o ${BINDIR}/db.o ${BINDIR}/main.o
 DB_PATH = \"${HOME}/.local/share/pass/pass.db\"
 DIRNAME = ${HOME}/.local/share/pass/
-INIT_SCRIPT = \"${HOME}/.local/share/pass/pass.sql\"
 USER_ID := $(shell id -u)
 
 all : pass
@@ -31,7 +30,7 @@ install : clean pass
 	cp ./bin/pass ~/.local/bin/
 
 ${BINDIR}/%.o : ${SRCDIR}/%.cpp
-	${COMPILER} -ggdb -Wall -D INIT_SCRIPT="${INIT_SCRIPT}" -D DB_PATH="${DB_PATH}" -c -o $@ $^
+	${COMPILER} -ggdb -Wall -D DB_PATH="${DB_PATH}" -c -o $@ $^
 
 clean :
 	@mkdir -p ${BINDIR}/.tmp
