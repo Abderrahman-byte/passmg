@@ -37,6 +37,10 @@ TEST(utils, hex) {
 }
 
 TEST(utils, random) {
-    //
-    GTEST_SKIP();
+    // FIXME this is a very basic test which does not test if the returned value
+    // is actully randomd
+
+    EXPECT_EQ(random_str(10).length(), 10);
+    EXPECT_EQ(random_str(20).length(), 20);
+    EXPECT_NE(random_str(20).compare(random_str(20)), 0);
 }
