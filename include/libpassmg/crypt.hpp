@@ -1,3 +1,4 @@
+#include <memory>
 #include <string>
 
 #include <openssl/sha.h>
@@ -7,8 +8,9 @@
 
 #define SHA256_OUTPUT_LENGTH (SHA256_DIGEST_LENGTH * sizeof(unsigned char))
 
-extern unsigned char *sha256(std::string);
-extern unsigned char *encrypt_aes_256(std::string, std::string, int *);
-extern std::string decrypt_aes_256(unsigned char *, int, std::string);
+extern std::unique_ptr<unsigned char[]> sha256(const std::string data);
+extern std::string sha256_sum(const std::string data);
+/* extern unsigned char *encrypt_aes_256(std::string, std::string, int *); */
+/* extern std::string decrypt_aes_256(unsigned char *, int, std::string); */
 
 #endif
