@@ -2,7 +2,7 @@ project (passmg_test)
 
 set(PASSMG_TEST_SRCS 
     ./utils.test.cpp
-    # ./crypt.test.cpp
+    ./crypt.test.cpp
 )
 
 FetchContent_Declare(
