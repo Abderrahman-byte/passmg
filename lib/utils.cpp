@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <cstring>
 #include <sys/stat.h>
 
@@ -10,7 +11,7 @@
 
 #include "libpassmg/utils.hpp"
 
-bool file_exists(const std::string &filepath) {
+bool file_exists(const std::string filepath) {
     if (filepath.length() <= 0)
         throw std::invalid_argument("empty filepath argument");
 
@@ -19,24 +20,24 @@ bool file_exists(const std::string &filepath) {
     return stat(filepath.c_str(), &buff) == 0;
 }
 
-std::string random_str(unsigned int &len) {
+std::string random_str(std::size_t len) {
     std::random_device rd;
     std::mt19937 generator(rd());
-    std::uniform_int_distribution<> distribution(0, 256);
     std::string allowed = ASCII_CHARS;
+    std::uniform_int_distribution<> distribution(0, allowed.length());
     std::string rnd_str;
 
-    for (int i = 0; i < len; i++) {
+    for (std::size_t i = 0; i < len; i++) {
         rnd_str += allowed[distribution(generator)];
     }
 
     return rnd_str;
 }
 
-std::string to_hex(const unsigned char *data, int len) {
+std::string to_hex(const unsigned char *data, std::size_t size) {
     std::stringstream ss;
 
-    for (int i = 0; i < len; i++) {
+    for (int i = 0; i < size; i++) {
         ss << std::hex << std::setw(2) << std::setfill('0') << (int)data[i];
     }
 
@@ -102,12 +103,12 @@ int parse_hex_digit(char digit) {
 
 // FIXME probable data leak
 unsigned char *from_hex(const std::string &hex_data) {
-    int data_size = HTC_LENGTH(hex_data.length());
+    std::size_t data_size = HTC_LENGTH(hex_data.length());
     unsigned char *data = new unsigned char[data_size];
 
     memset(data, 0, data_size);
 
-    for (int i = 0; i < hex_data.length() - 1; i += 2) {
+    for (std::size_t i = 0; i < hex_data.length() - 1; i += 2) {
         unsigned char byte;
         byte = parse_hex_digit(hex_data[i]);
         byte = byte << 4;

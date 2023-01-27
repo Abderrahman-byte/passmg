@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <string>
 
 #ifndef _UTILS_PASSMG_HPP_
@@ -9,9 +10,9 @@
 
 #define HTC_LENGTH(len) (len / 2) * sizeof(unsigned char)
 
-extern bool file_exists(const std::string &filename);
-extern std::string random_str(unsigned int &length);
-extern std::string to_hex(const unsigned char *, int);
+extern bool file_exists(const std::string filename);
+extern std::string random_str(std::size_t length);
+extern std::string to_hex(const unsigned char *, std::size_t size);
 extern unsigned char *from_hex(const std::string &hex_data);
 
 #endif
