@@ -8,21 +8,15 @@
 // #define DB_PATH "~/.local/share/pass/pass.db"
 // #define INIT_SCRIPT "~/.local/share/pass/pass.sql"
 
-struct user_data {
-        std::string id;
-        std::string username;
-        std::string password;
-};
-
 #define USER_TABLE_DDL \
-    "CREATE TABLE IF NOT EXTSTS user (\
+    "CREATE TABLE IF NOT EXISTS user (\
 id INTEGER PRIMARY KEY AUTOINCREMENT,\
 username VARCHAR(200) UNIQUE NOT NULL,\
 password TEXT NOT NULL \
 );"
 
 #define PASSWORD_TABLE_DDL \
-    "CREATE TABLE IF NOT EXTSTS password (\
+    "CREATE TABLE IF NOT EXISTS password (\
 id INTEGER PRIMARY KEY AUTOINCREMENT,\
 title VARCHAR(200) NOT NULL,\
 user_id INTEGER REFERENCES user(id),\
