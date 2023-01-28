@@ -102,3 +102,18 @@ std::string decrypt_aes_256(unsigned char *cipher, std::size_t ciphertext_len,
 
     return std::string(plain, plain + plainlen);
 }
+
+std::string encrypt_aes_256_hex(const std::string data,
+                                const std::string passphrase) {
+    std::unique_ptr<unsigned char[]> encoded =
+        encrypt_aes_256(data, passphrase);
+
+    return to_hex(encoded.get(), AES_OUTPUT_LENGTH(data.length()));
+}
+
+std::string decrypt_aes_256_hex(std::string data_hex, std::string passphrase) {
+    std::unique_ptr<unsigned char[]> cipher(from_hex(data_hex));
+    std::size_t ciphertext_len = (data_hex.length() + 1) / 2;
+
+    return decrypt_aes_256(cipher.get(), ciphertext_len, passphrase);
+}

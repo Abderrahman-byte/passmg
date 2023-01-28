@@ -11,9 +11,17 @@
 
 extern std::unique_ptr<unsigned char[]> sha256(const std::string data);
 extern std::string sha256_sum(const std::string data);
+
 extern std::unique_ptr<unsigned char[]>
 encrypt_aes_256(const std::string data, const std::string passphrase);
+
 extern std::string decrypt_aes_256(unsigned char *cipher,
                                    std::size_t ciphertext_len,
                                    std::string passphrase);
+
+extern std::string encrypt_aes_256_hex(const std::string data,
+                                       const std::string passphrase);
+
+extern std::string decrypt_aes_256_hex(std::string data_hex,
+                                       std::string passphrase);
 #endif
