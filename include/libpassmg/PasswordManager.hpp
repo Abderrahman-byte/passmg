@@ -19,10 +19,12 @@ class PasswordManager {
         void signup(std::string username, std::string password);
         bool is_authenticated();
 
-        std::vector<password_t> &list();
-        void get(std::size_t id);
-        void create(password_t &password);
+        std::vector<struct password_t> list();
+        struct password_t get(std::size_t id);
+        struct password_t get(std::string title);
+        struct password_t create(std::string title, std::string content);
         void remove(std::size_t id);
+        void remove(std::string title);
 
     private:
         sqlite3 *db = nullptr;

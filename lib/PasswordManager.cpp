@@ -5,6 +5,7 @@
 #include <utility>
 
 #include <sqlite3.h>
+#include <vector>
 
 #include "db.cpp"
 #include "libpassmg/PasswordManager.hpp"
@@ -93,6 +94,95 @@ void PasswordManager::login(std::string username, std::string password) {
     }
 
     user.pw = password;
+}
+
+struct password_t PasswordManager::create(std::string title,
+                                          std::string content) {
+    if (!is_authenticated()) throw AuthenticationRequired();
+
+    struct password_t password = {0};
+    int rc;
+
+    if (title.length() < 4)
+        throw InvalidInputException("Password title is toot short");
+
+    password.title = title;
+    password.content = content;
+    password.cipher_content = encrypt_aes_256_hex(content, user.pw);
+
+    rc = create_password(db, user.id, password);
+
+    if (rc == SQLITE_CONSTRAINT) {
+        throw IntegrityException("Password with same title already exists.");
+    } else if (rc != SQLITE_OK) {
+        throw DatabaseException();
+    }
+
+    return password;
+}
+
+struct password_t PasswordManager::get(std::size_t id) {
+    if (!is_authenticated()) throw AuthenticationRequired();
+
+    struct password_t password = {0};
+    int rc = select_password(db, user.id, "id", std::to_string(id), password);
+
+    if (rc != SQLITE_OK) throw DatabaseException();
+
+    if (password.id > 0 && password.cipher_content.length() > 0) {
+        password.content =
+            decrypt_aes_256_hex(password.cipher_content, user.pw);
+    }
+
+    // maybe throw exception if password doesn't exist
+
+    return password;
+}
+
+struct password_t PasswordManager::get(std::string title) {
+    if (!is_authenticated()) throw AuthenticationRequired();
+
+    struct password_t password = {0};
+    int rc = select_password(db, user.id, "title", title, password);
+
+    if (rc != SQLITE_OK) throw DatabaseException();
+
+    if (password.id > 0 && password.cipher_content.length() > 0) {
+        password.content =
+            decrypt_aes_256_hex(password.cipher_content, user.pw);
+    }
+
+    // maybe throw exception if password doesn't exist
+
+    return password;
+}
+
+std::vector<struct password_t> PasswordManager::list() {
+    if (!is_authenticated()) throw AuthenticationRequired();
+
+    std::vector<struct password_t> passwords;
+
+    int rc = select_user_passwords(db, user.id, passwords);
+
+    if (rc != SQLITE_OK) throw DatabaseException();
+
+    return passwords;
+}
+
+void PasswordManager::remove(std::size_t id) {
+    if (!is_authenticated()) throw AuthenticationRequired();
+
+    int rc = delete_password(db, user.id, "id", std::to_string(id));
+
+    if (rc != SQLITE_OK) throw DatabaseException();
+}
+
+void PasswordManager::remove(std::string title) {
+    if (!is_authenticated()) throw AuthenticationRequired();
+
+    int rc = delete_password(db, user.id, "title", title);
+
+    if (rc != SQLITE_OK) throw DatabaseException();
 }
 
 bool PasswordManager::is_authenticated() {

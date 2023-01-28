@@ -1,6 +1,8 @@
+#include <cstddef>
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <vector>
 
 #include <sqlite3.h>
 
@@ -13,6 +15,7 @@
 /* Callback That does nothing */
 int do_nothing(void *s, int argc, char **argv, char **azColName) { return 0; }
 
+/* A callback for select row from user table */
 int set_user_data(void *s, int argc, char **argv, char **azColName) {
     // TODO replace c style casting with something more efficient
     struct user_t *user_data = (struct user_t *)s;
@@ -23,17 +26,43 @@ int set_user_data(void *s, int argc, char **argv, char **azColName) {
         if (colname.compare("id") == 0) {
             // FIXME this is not safe and it may also throw an error if the
             // value in argv in not an int
-            user_data->id = std::stoi(argv[i]);
-        }
-
-        if (colname.compare("password") == 0) {
+            user_data->id = std::stoul(argv[i]);
+        } else if (colname.compare("password") == 0) {
             user_data->hashed_pw = std::string(argv[i], strlen(argv[i]));
-        }
-
-        if (colname.compare("username") == 0) {
+        } else if (colname.compare("username") == 0) {
             user_data->username = std::string(argv[i], strlen(argv[i]));
         }
     }
+
+    return 0;
+}
+
+int set_password_data(void *s, int argc, char **argv, char **azColName) {
+    struct password_t *password = (struct password_t *)s;
+
+    for (std::size_t i = 0; i < argc; i++) {
+        std::string colname = std::string(azColName[i], strlen(azColName[i]));
+
+        if (colname.compare("id") == 0) {
+            password->id = std::stoul(argv[i]);
+        } else if (colname.compare("title") == 0) {
+            password->title = std::string(argv[i], strlen(argv[i]));
+        } else if (colname.compare("content") == 0) {
+            password->cipher_content = std::string(argv[i], strlen(argv[i]));
+        }
+    }
+
+    return 0;
+}
+
+int add_password_data(void *s, int argc, char **argv, char **azColName) {
+    std::vector<struct password_t> *pws =
+        static_cast<std::vector<struct password_t> *>(s);
+    struct password_t password;
+
+    set_password_data((void *)&password, argc, argv, azColName);
+
+    pws->push_back(password);
 
     return 0;
 }
@@ -68,6 +97,52 @@ int select_user_by_username(sqlite3 *db, struct user_t &data) {
 
     int rc =
         sqlite3_exec(db, query.c_str(), set_user_data, (void *)&data, NULL);
+
+    return rc;
+}
+
+int create_password(sqlite3 *db, std::size_t user_id,
+                    struct password_t &password) {
+    std::string query =
+        "INSERT INTO password (user_id, title, content) VALUES ('" +
+        std::to_string(user_id) + "', '" + password.title + "', '" +
+        password.cipher_content + "') RETURNING id;";
+
+    int rc = sqlite3_exec(db, query.c_str(), set_password_data,
+                          (void *)&password, NULL);
+
+    return rc;
+}
+
+int select_password(sqlite3 *db, std::size_t user_id, std::string key,
+                    std::string value, struct password_t &pw) {
+    std::string query = "SELECT id, title, content FROM password WHERE " + key +
+                        " =  '" + value +
+                        "' AND user_id = " + std::to_string(user_id) + ";";
+
+    int rc =
+        sqlite3_exec(db, query.c_str(), set_password_data, (void *)&pw, NULL);
+
+    return rc;
+}
+
+int select_user_passwords(sqlite3 *db, std::size_t user_id,
+                          std::vector<struct password_t> &passwords) {
+    std::string query = "SELECT id, title FROM password WHERE user_id = '" +
+                        std::to_string(user_id) + "';";
+
+    int rc =
+        sqlite3_exec(db, query.c_str(), add_password_data, &passwords, NULL);
+
+    return rc;
+}
+
+int delete_password(sqlite3 *db, std::size_t user_id, std::string key,
+                    std::string value) {
+    std::string query = "DELETE FROM password WHERE " + key + " =  '" + value +
+                        "' AND user_id = " + std::to_string(user_id) + ";";
+
+    int rc = sqlite3_exec(db, query.c_str(), do_nothing, NULL, NULL);
 
     return rc;
 }
