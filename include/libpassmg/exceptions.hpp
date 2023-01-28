@@ -68,4 +68,10 @@ class WrongCredentialsException : public PasswordManagerException {
             : PasswordManagerException("Username or password are incorrect") {}
 };
 
+class AuthenticationRequired : public PasswordManagerException {
+    public:
+        explicit AuthenticationRequired()
+            : PasswordManagerException("Authentication required") {}
+};
+
 #endif // !_PASSMG_EXCEPTIONS_
