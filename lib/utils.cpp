@@ -23,12 +23,11 @@ bool file_exists(const std::string filepath) {
 std::string random_str(std::size_t len) {
     std::random_device rd;
     std::mt19937 generator(rd());
-    std::string allowed = ASCII_CHARS;
-    std::uniform_int_distribution<> distribution(0, allowed.length());
+    std::uniform_int_distribution<> distribution(0, ascii.length());
     std::string rnd_str;
 
     for (std::size_t i = 0; i < len; i++) {
-        rnd_str += allowed[distribution(generator)];
+        rnd_str += ascii[distribution(generator)];
     }
 
     return rnd_str;

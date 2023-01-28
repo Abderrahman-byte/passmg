@@ -1,6 +1,5 @@
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
 #include <string>
 #include <utility>
 
@@ -34,8 +33,6 @@ PasswordManager::PasswordManager(std::string dbname) {
     }
 
     rc = init_tables(db, &zErrMsg);
-
-    clean_user();
 
     if (rc != SQLITE_OK) {
         // FIXME throwing Exception before freeing zErrMsg causes memory leak
@@ -89,7 +86,7 @@ void PasswordManager::login(std::string username, std::string password) {
     if (user.id == 0) throw WrongCredentialsException();
 
     if (sha256_sum(password).compare(user.hashed_pw) != 0) {
-        clean_user();
+        user = {0};
         throw WrongCredentialsException();
     }
 
@@ -187,11 +184,4 @@ void PasswordManager::remove(std::string title) {
 
 bool PasswordManager::is_authenticated() {
     return user.id > 0 && user.username.length() > 0;
-}
-
-void PasswordManager::clean_user() {
-    user.id = 0;
-    user.username = "";
-    user.hashed_pw = "<unmatchable>";
-    user.pw = "";
 }

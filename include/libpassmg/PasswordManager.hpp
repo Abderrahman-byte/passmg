@@ -28,9 +28,7 @@ class PasswordManager {
 
     private:
         sqlite3 *db = nullptr;
-        struct user_t user;
-
-        void clean_user();
+        struct user_t user = {0};
 };
 
 #endif // !__PASSWORD_MANAGER__

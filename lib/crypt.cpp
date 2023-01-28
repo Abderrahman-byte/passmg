@@ -23,7 +23,7 @@ std::unique_ptr<unsigned char[]> sha256(const std::string input) {
 
     SHA256((unsigned char *)input.c_str(), input.length(), md.get());
 
-    return std::move(md);
+    return md;
 }
 
 std::string sha256_sum(const std::string data) {
@@ -66,7 +66,7 @@ std::unique_ptr<unsigned char[]> encrypt_aes_256(const std::string data,
 
     rc = EVP_EncryptFinal_ex(ctx.get(), output.get() + outlen, &ciphertext_len);
 
-    return std::move(output);
+    return output;
 }
 
 std::string decrypt_aes_256(unsigned char *cipher, std::size_t ciphertext_len,
