@@ -3,6 +3,7 @@ include(FindOpenSSL)
 set(LIBPASSMG_SOURCES 
     ./crypt.cpp
     ./utils.cpp
+    ./PasswordManager.cpp
 )
 
 find_library(SQLITE_LIB sqlite3 REQUIRED)

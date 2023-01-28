@@ -3,6 +3,7 @@ project (passmg_test)
 set(PASSMG_TEST_SRCS 
     ./utils.test.cpp
     ./crypt.test.cpp
+    ./PasswordManager.test.cpp
 )
 
 FetchContent_Declare(
