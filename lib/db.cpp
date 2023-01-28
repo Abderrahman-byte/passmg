@@ -18,7 +18,7 @@ int do_nothing(void *s, int argc, char **argv, char **azColName) { return 0; }
 /* A callback for select row from user table */
 int set_user_data(void *s, int argc, char **argv, char **azColName) {
     // TODO replace c style casting with something more efficient
-    struct user_t *user_data = (struct user_t *)s;
+    struct user_t *user_data = static_cast<struct user_t *>(s);
 
     for (int i = 0; i < argc; i++) {
         std::string colname(azColName[i], strlen(azColName[i]));
@@ -38,7 +38,7 @@ int set_user_data(void *s, int argc, char **argv, char **azColName) {
 }
 
 int set_password_data(void *s, int argc, char **argv, char **azColName) {
-    struct password_t *password = (struct password_t *)s;
+    struct password_t *password = static_cast<struct password_t *>(s);
 
     for (std::size_t i = 0; i < argc; i++) {
         std::string colname = std::string(azColName[i], strlen(azColName[i]));
@@ -56,11 +56,11 @@ int set_password_data(void *s, int argc, char **argv, char **azColName) {
 }
 
 int add_password_data(void *s, int argc, char **argv, char **azColName) {
+    struct password_t password = {0};
     std::vector<struct password_t> *pws =
         static_cast<std::vector<struct password_t> *>(s);
-    struct password_t password;
 
-    set_password_data((void *)&password, argc, argv, azColName);
+    set_password_data(static_cast<void *>(&password), argc, argv, azColName);
 
     pws->push_back(password);
 
@@ -84,8 +84,8 @@ int create_user(sqlite3 *db, char **zErrMsg, struct user_t &data) {
                         data.username + "','" + data.hashed_pw +
                         "') returning id;";
 
-    int rc =
-        sqlite3_exec(db, query.c_str(), set_user_data, (void *)&data, zErrMsg);
+    int rc = sqlite3_exec(db, query.c_str(), set_user_data,
+                          static_cast<void *>(&data), zErrMsg);
 
     return rc;
 }
@@ -95,8 +95,8 @@ int select_user_by_username(sqlite3 *db, struct user_t &data) {
         "SELECT username, password, id FROM user WHERE username = '" +
         data.username + "';";
 
-    int rc =
-        sqlite3_exec(db, query.c_str(), set_user_data, (void *)&data, NULL);
+    int rc = sqlite3_exec(db, query.c_str(), set_user_data,
+                          static_cast<void *>(&data), NULL);
 
     return rc;
 }
@@ -109,7 +109,7 @@ int create_password(sqlite3 *db, std::size_t user_id,
         password.cipher_content + "') RETURNING id;";
 
     int rc = sqlite3_exec(db, query.c_str(), set_password_data,
-                          (void *)&password, NULL);
+                          static_cast<void *>(&password), NULL);
 
     return rc;
 }
@@ -120,8 +120,8 @@ int select_password(sqlite3 *db, std::size_t user_id, std::string key,
                         " =  '" + value +
                         "' AND user_id = " + std::to_string(user_id) + ";";
 
-    int rc =
-        sqlite3_exec(db, query.c_str(), set_password_data, (void *)&pw, NULL);
+    int rc = sqlite3_exec(db, query.c_str(), set_password_data,
+                          static_cast<void *>(&pw), NULL);
 
     return rc;
 }

@@ -1,7 +1,6 @@
 #include <array>
 #include <cstdlib>
 #include <ctime>
-#include <iostream>
 #include <random>
 
 #include <gtest/gtest.h>
