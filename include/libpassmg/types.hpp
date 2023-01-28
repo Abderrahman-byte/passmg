@@ -8,6 +8,7 @@ struct password_t {
         std::size_t id;
         std::string title;
         std::string content;
+        std::string cipher_content;
 };
 
 struct user_t {
