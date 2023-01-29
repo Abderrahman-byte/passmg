@@ -14,7 +14,7 @@ class PasswordManagerException : public std::exception {
 
         virtual ~PasswordManagerException() {}
 
-        const char *what() { return msg_.c_str(); }
+        const char *what() const noexcept override { return msg_.c_str(); }
 
     protected:
         std::string msg_;
