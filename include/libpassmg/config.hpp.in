@@ -6,6 +6,7 @@
 #define PASSMG_VERSION "@PROJECT_VERSION@"
 #define PROJECT_NAME "@PROJECT_NAME@"
 #define PASSMG_HOME ".local/share/passmg"
+#define RANDOM_PASSWORD_LENGTH 20
 
 #define USER_TABLE_DDL \
     "CREATE TABLE IF NOT EXISTS user (\
