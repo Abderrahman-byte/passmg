@@ -88,3 +88,19 @@ void set_echo(bool echo) {
 void print_exception(const std::exception &ex) {
     std::cerr << "[ERROR] " << ex.what() << '\n';
 }
+
+std::string password_str(const struct password_t &pw, bool show_content) {
+    std::string out = "id : " + std::to_string(pw.id) + "\ntitle: " + pw.title;
+
+    if (show_content) out += "\ncontent : " + pw.content;
+
+    return out;
+}
+
+std::string prompt_password() {
+    set_echo(false);
+    std::string password = prompt("Enter password : ");
+    set_echo(true);
+    std::cout << '\n';
+    return password;
+}

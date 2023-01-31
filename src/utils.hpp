@@ -1,5 +1,8 @@
 #include <exception>
 #include <string>
+#include <vector>
+
+#include "libpassmg/types.hpp"
 
 #ifndef _UTILS_PASSMG_CLI_HPP_
 #define _UTILS_PASSMG_CLI_HPP_
@@ -11,5 +14,7 @@ extern void mkpath(std::string path);
 extern std::string prompt(const std::string &out);
 extern void set_echo(bool echo);
 extern void print_exception(const std::exception &ex);
+extern std::string password_str(const struct password_t &pw, bool show_content);
+std::string prompt_password();
 
 #endif

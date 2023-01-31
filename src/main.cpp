@@ -2,19 +2,19 @@
 #include <exception>
 #include <filesystem>
 #include <iostream>
+#include <vector>
 
 #include "cxxopts.hpp"
 
 #include "libpassmg/PasswordManager.hpp"
 #include "libpassmg/config.hpp"
 #include "libpassmg/exceptions.hpp"
+#include "libpassmg/utils.hpp"
 #include "utils.hpp"
 
 namespace fs = std::filesystem;
 
-fs::path get_home_dir();
 cxxopts::ParseResult parse_options(int argc, const char *const *argv);
-std::string prompt_password();
 int interactive_mode(PasswordManager &passmg);
 void auth_menu(PasswordManager &passmg);
 void print_auth_menu();
@@ -23,11 +23,12 @@ void try_login(PasswordManager &passmg, std::string username,
 void try_signup(PasswordManager &passmg, std::string username,
                 std::string password);
 void print_menu();
+void create_password(PasswordManager &passmg);
+void list_passwords(PasswordManager &passmg);
 
 int main(int argc, const char *const *argv) {
     cxxopts::ParseResult results = parse_options(argc, argv);
-    fs::path home_dir = get_home_dir();
-    fs::path db_dir = home_dir / "data/";
+    fs::path db_dir = fs::path(passmg_getenv("HOME")) / PASSMG_HOME / "data/";
     fs::path db_path = db_dir / "db.sqlite";
     std::string username, password;
 
@@ -40,7 +41,7 @@ int main(int argc, const char *const *argv) {
 
     PasswordManager passmg(db_path);
 
-    interactive_mode(passmg);
+    if (results.count("interactive")) return interactive_mode(passmg);
 
     /* username = results.count("username") ?
      * results["username"].as<std::string>() */
@@ -56,20 +57,6 @@ int main(int argc, const char *const *argv) {
     /* std::cout << "password : " << password << std::endl; */
 
     return EXIT_SUCCESS;
-}
-
-fs::path get_home_dir() {
-    auto home_dir = fs::path(passmg_getenv("HOME")) / PASSMG_HOME;
-
-    return home_dir;
-}
-
-std::string prompt_password() {
-    set_echo(false);
-    std::string password = prompt("Enter password : ");
-    set_echo(true);
-    std::cout << '\n';
-    return password;
 }
 
 cxxopts::ParseResult parse_options(int argc, const char *const *argv) {
@@ -114,7 +101,23 @@ int interactive_mode(PasswordManager &passmg) {
 
     if (!passmg.is_authenticated()) return EXIT_FAILURE;
 
-    return 0;
+    while (true) {
+        std::string cmd = prompt(passmg.get_username() + " > ");
+
+        if (cmd.compare("q") == 0 || cmd.compare("quit") == 0) {
+            exit(EXIT_SUCCESS);
+        }
+
+        if (cmd.compare("h") == 0 || cmd.compare("help") == 0) {
+            print_menu();
+        } else if (cmd.compare("create") == 0) {
+            create_password(passmg);
+        } else if (cmd.compare("list") == 0) {
+            list_passwords(passmg);
+        }
+    }
+
+    return EXIT_SUCCESS;
 }
 
 void auth_menu(PasswordManager &passmg) {
@@ -144,15 +147,18 @@ void print_auth_menu() {
               << "q - quit" << '\n';
 }
 
-void print_menu() {}
+void print_menu() {
+    std::cout << "help - show help\n"
+              << "quit\n"
+              << "create - create a new password\n"
+              << "get - get content of a password\n"
+              << "list - list saved passwords\n";
+}
 
 void try_login(PasswordManager &passmg, std::string username,
                std::string password) {
     try {
         passmg.login(username, password);
-    } catch (DatabaseException &ex) {
-        print_exception(ex);
-        exit(EXIT_FAILURE);
     } catch (PasswordManagerException &ex) {
         print_exception(ex);
     } catch (std::exception &ex) {
@@ -165,13 +171,42 @@ void try_signup(PasswordManager &passmg, std::string username,
                 std::string password) {
     try {
         passmg.signup(username, password);
-    } catch (DatabaseException &ex) {
-        print_exception(ex);
-        exit(EXIT_FAILURE);
     } catch (PasswordManagerException &ex) {
         print_exception(ex);
     } catch (std::exception &ex) {
         print_exception(ex);
         exit(EXIT_FAILURE);
+    }
+}
+
+void create_password(PasswordManager &passmg) {
+    std::string title, content, resp;
+
+    title = prompt("Enter new password title : ");
+
+    resp = prompt("Do want to auto generate the password (Y/n) ? ");
+
+    if (resp.compare("y") == 0 || resp.compare("Y") == 0) {
+        content = random_str(RANDOM_PASSWORD_LENGTH);
+    } else {
+        content = prompt("Enter password : ");
+    }
+
+    if (content.empty()) return;
+
+    try {
+        struct password_t pw = passmg.create(title, content);
+        std::cout << "[INFO] password has been created\n"
+                  << password_str(pw, true) << '\n';
+    } catch (std::exception &ex) {
+        print_exception(ex);
+    }
+}
+
+void list_passwords(PasswordManager &passmg) {
+    std::vector<struct password_t> pws = passmg.list();
+
+    for (auto pw : pws) {
+        std::cout << password_str(pw, false) << "\n++++++++++++++++++" << '\n';
     }
 }
