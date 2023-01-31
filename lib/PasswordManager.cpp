@@ -185,3 +185,9 @@ void PasswordManager::remove(std::string title) {
 bool PasswordManager::is_authenticated() {
     return user.id > 0 && user.username.length() > 0;
 }
+
+std::string PasswordManager::get_username() {
+    if (!is_authenticated()) throw AuthenticationRequired();
+
+    return user.username;
+}

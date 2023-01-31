@@ -25,6 +25,7 @@ class PasswordManager {
         struct password_t create(std::string title, std::string content);
         void remove(std::size_t id);
         void remove(std::string title);
+        std::string get_username();
 
     private:
         sqlite3 *db = nullptr;
