@@ -1,6 +1,7 @@
 # Maintainer: Abderrahman-byte <el.abderrahman00@gmail.com>
 # Contributor: Abderrahman-byte <el.abderrahman00@gmail.com>
 
+pkgname=passmg
 pkgver=2.0.0
 pkgrel=1
 pkgdesc="Yet another cli based password manager"
