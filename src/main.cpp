@@ -14,18 +14,19 @@
 
 namespace fs = std::filesystem;
 
-cxxopts::ParseResult parse_options(int argc, const char *const *argv);
-int interactive_mode(PasswordManager &passmg);
-void auth_menu(PasswordManager &passmg);
-void print_auth_menu();
-void try_login(PasswordManager &passmg, std::string username,
-               std::string password);
-void try_signup(PasswordManager &passmg, std::string username,
-                std::string password);
-void print_menu();
-void create_password(PasswordManager &passmg);
-void list_passwords(PasswordManager &passmg);
-void get_password(PasswordManager &passmg);
+static cxxopts::ParseResult parse_options(int argc, const char *const *argv);
+static int interactive_mode(PasswordManager &passmg);
+static void auth_menu(PasswordManager &passmg);
+static void print_auth_menu();
+static void try_login(PasswordManager &passmg, std::string username,
+                      std::string password);
+static void try_signup(PasswordManager &passmg, std::string username,
+                       std::string password);
+static void print_menu();
+static void create_password(PasswordManager &passmg);
+static void list_passwords(PasswordManager &passmg);
+static void get_password(PasswordManager &passmg);
+static void remove_password(PasswordManager &passmg);
 
 int main(int argc, const char *const *argv) {
     cxxopts::ParseResult results = parse_options(argc, argv);
@@ -117,6 +118,8 @@ int interactive_mode(PasswordManager &passmg) {
             list_passwords(passmg);
         } else if (cmd.compare("get") == 0) {
             get_password(passmg);
+        } else if (cmd.compare("rm") == 0 || cmd.compare("remove") == 0) {
+            remove_password(passmg);
         }
     }
 
@@ -154,6 +157,7 @@ void print_menu() {
     std::cout << "help - show help\n"
               << "create - create a new password\n"
               << "get - get content of a password\n"
+              << "remove - delete a password\n"
               << "list - list saved passwords\n"
               << "quit\n";
 }
@@ -228,4 +232,15 @@ void get_password(PasswordManager &passmg) {
     }
 
     std::cout << password_str(password, true) << '\n';
+}
+
+void remove_password(PasswordManager &passmg) {
+    std::string title = prompt("Enter password title : ");
+    struct password_t password = {0};
+
+    if (title.length() <= 0) return;
+
+    passmg.remove(title);
+
+    // TODO MUST check if password has been deleted and pring message
 }
