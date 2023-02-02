@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <exception>
 #include <string>
 #include <vector>
@@ -15,6 +16,7 @@ extern std::string prompt(const std::string &out);
 extern void set_echo(bool echo);
 extern void print_exception(const std::exception &ex);
 extern std::string password_str(const struct password_t &pw, bool show_content);
-std::string prompt_password();
+extern std::string prompt_password();
+extern std::string repeat(const char *c, std::size_t count);
 
 #endif

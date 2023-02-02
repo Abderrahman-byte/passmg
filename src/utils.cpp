@@ -8,6 +8,7 @@
 #include <termios.h>
 
 #include "libpassmg/config.hpp"
+#include "libpassmg/types.hpp"
 #include "utils.hpp"
 
 // Get version text
@@ -92,7 +93,11 @@ void print_exception(const std::exception &ex) {
 std::string password_str(const struct password_t &pw, bool show_content) {
     std::string out = "id : " + std::to_string(pw.id) + "\ntitle: " + pw.title;
 
-    if (show_content) out += "\ncontent : " + pw.content;
+    if (show_content) {
+        out += "\ncontent : " + pw.content;
+    } else if (pw.content.length() > 0) {
+        out += "\ncontent : " + repeat("*", pw.content.length());
+    }
 
     return out;
 }
@@ -103,4 +108,13 @@ std::string prompt_password() {
     set_echo(true);
     std::cout << '\n';
     return password;
+}
+
+std::string repeat(const char *c, std::size_t count) {
+    std::string out = "";
+
+    for (std::size_t i = 0; i < count; i++)
+        out += c;
+
+    return out;
 }
