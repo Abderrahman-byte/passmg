@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
 
-project("Password Manager" VERSION 2.0)
+project("Password Manager" VERSION 2.0.0)
 
 include(FetchContent)
 
