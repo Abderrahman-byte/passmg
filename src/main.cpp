@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <cstdlib>
 #include <exception>
 #include <filesystem>
@@ -99,6 +100,49 @@ int main(int argc, const char *const *argv) {
         return EXIT_SUCCESS;
     }
 
+    if (results.count("get") > 0) {
+        std::string title = results.count("title") > 0
+                                ? results["title"].as<std::string>()
+                                : "";
+        std::size_t id =
+            results.count("id") > 0 ? results["id"].as<std::size_t>() : 0;
+        struct password_t pw = {0};
+
+        if (title.length() <= 0 && id == 0) {
+            std::cerr << "[ERROR] must provide password title or id\n";
+            return EXIT_FAILURE;
+        }
+
+        if (title.length() > 0) pw = passmg.get(title);
+        else if (id > 0) pw = passmg.get(id);
+
+        if (pw.id <= 0) {
+            std::cerr << "[ERROR] password not found\n";
+            return EXIT_FAILURE;
+        }
+
+        std::cout << password_str(pw, true) << '\n';
+        return EXIT_SUCCESS;
+    }
+
+    if (results.count("remove") > 0) {
+        std::string title = results.count("title") > 0
+                                ? results["title"].as<std::string>()
+                                : "";
+        std::size_t id =
+            results.count("id") > 0 ? results["id"].as<std::size_t>() : 0;
+
+        if (title.length() <= 0 && id == 0) {
+            std::cerr << "[ERROR] must provide password title or id\n";
+            return EXIT_FAILURE;
+        }
+
+        if (title.length() > 0) passmg.remove(title);
+        else if (id > 0) passmg.remove(id);
+
+        return EXIT_SUCCESS;
+    }
+
     return EXIT_SUCCESS;
 }
 
@@ -113,7 +157,10 @@ cxxopts::ParseResult parse_options(int argc, const char *const *argv) {
         ("signup", "Create an account")
         ("l,list", "List saved password")
         ("c,create", "Create new password")
+        ("get", "Get content of password")
+        ("d,remove", "Delete password")
         ("title", "Password title", cxxopts::value<std::string>())
+        ("id", "Password id", cxxopts::value<std::size_t>())
         ("content", "Password content", cxxopts::value<std::string>())
         ("u,username","Authentication username",cxxopts::value<std::string>())
         ("p,password","Authentication password",cxxopts::value<std::string>())
