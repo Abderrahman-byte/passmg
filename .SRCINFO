@@ -1,0 +1,16 @@
+pkgbase = passmg 
+	pkgdesc = Yet another cli based password manager	
+    pkgver = 2.0.0 
+	pkgrel = 1
+	url = https://github.com/Abderrahman-byte/passmg	
+    arch = any
+	license = GPL3
+	makedepends = cmake>=3.11
+	makedepends = make
+	makedepends = git 
+	depends = sqlite3>=3.0
+	depends = openssl>=3.0
+	provides = passmg
+	sha256sums = SKIP
+
+pkgname = passmg
