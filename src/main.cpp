@@ -16,23 +16,25 @@ namespace fs = std::filesystem;
 
 static cxxopts::ParseResult parse_options(int argc, const char *const *argv);
 static int interactive_mode(PasswordManager &passmg);
-static void auth_menu(PasswordManager &passmg);
+static void interactive_auth_mode(PasswordManager &passmg);
 static void print_auth_menu();
-static void try_login(PasswordManager &passmg, std::string username,
+static int try_login(PasswordManager &passmg, std::string username,
+                     std::string password);
+static int try_signup(PasswordManager &passmg, std::string username,
                       std::string password);
-static void try_signup(PasswordManager &passmg, std::string username,
-                       std::string password);
 static void print_menu();
 static void create_password(PasswordManager &passmg);
 static void list_passwords(PasswordManager &passmg);
 static void get_password(PasswordManager &passmg);
 static void remove_password(PasswordManager &passmg);
+static void print_banner();
 
 int main(int argc, const char *const *argv) {
     cxxopts::ParseResult results = parse_options(argc, argv);
     fs::path db_dir = fs::path(passmg_getenv("HOME")) / PASSMG_HOME / "data/";
     fs::path db_path = db_dir / "db.sqlite";
     std::string username, password;
+    int rc = 0;
 
     if (results.count("version")) {
         std::cout << get_version() << '\n';
@@ -45,18 +47,27 @@ int main(int argc, const char *const *argv) {
 
     if (results.count("interactive")) return interactive_mode(passmg);
 
-    /* username = results.count("username") ?
-     * results["username"].as<std::string>() */
-    /*                                      : prompt("Enter username : "); */
+    username = results.count("username") ? results["username"].as<std::string>()
+                                         : prompt("Enter username : ");
 
-    /* if (results.count("password")) { */
-    /*     password = results["password"].as<std::string>(); */
-    /* } else { */
-    /*     password = prompt_password(); */
-    /* } */
+    if (results.count("password")) {
+        password = results["password"].as<std::string>();
+    } else {
+        password = prompt_password();
+    }
 
-    /* std::cout << "username : " << username << std::endl; */
-    /* std::cout << "password : " << password << std::endl; */
+    if (results.count("signup")) {
+        rc = try_signup(passmg, username, password);
+    } else {
+        rc = try_login(passmg, username, password);
+    }
+
+    if (rc != EXIT_SUCCESS) exit(rc);
+
+    if (results.count("list")) {
+        list_passwords(passmg);
+        return EXIT_SUCCESS;
+    }
 
     return EXIT_SUCCESS;
 }
@@ -68,9 +79,9 @@ cxxopts::ParseResult parse_options(int argc, const char *const *argv) {
 
     // clang-format off
     options.add_options()
-        ("command", "Action commands : list, get, delete, add", cxxopts::value<std::string>())
-        ("args", "arguments of the command", cxxopts::value<std::vector<std::string>>())
         ("i,interactive", "Enter interactive mode")
+        ("signup", "Create an account")
+        ("l,list", "List saved password")
         ("u,username","Authentication username",cxxopts::value<std::string>())
         ("p,password","Authentication password",cxxopts::value<std::string>())
         ("v,version", "show version")
@@ -99,7 +110,8 @@ cxxopts::ParseResult parse_options(int argc, const char *const *argv) {
 }
 
 int interactive_mode(PasswordManager &passmg) {
-    auth_menu(passmg);
+    print_banner();
+    interactive_auth_mode(passmg);
 
     if (!passmg.is_authenticated()) return EXIT_FAILURE;
 
@@ -126,7 +138,7 @@ int interactive_mode(PasswordManager &passmg) {
     return EXIT_SUCCESS;
 }
 
-void auth_menu(PasswordManager &passmg) {
+void interactive_auth_mode(PasswordManager &passmg) {
     while (!passmg.is_authenticated()) {
         std::string input = prompt("> ");
 
@@ -162,28 +174,34 @@ void print_menu() {
               << "quit\n";
 }
 
-void try_login(PasswordManager &passmg, std::string username,
-               std::string password) {
+int try_login(PasswordManager &passmg, std::string username,
+              std::string password) {
     try {
         passmg.login(username, password);
+        return EXIT_SUCCESS;
     } catch (PasswordManagerException &ex) {
         print_exception(ex);
     } catch (std::exception &ex) {
         print_exception(ex);
         exit(EXIT_FAILURE);
     }
+
+    return EXIT_FAILURE;
 }
 
-void try_signup(PasswordManager &passmg, std::string username,
-                std::string password) {
+int try_signup(PasswordManager &passmg, std::string username,
+               std::string password) {
     try {
         passmg.signup(username, password);
+        return EXIT_SUCCESS;
     } catch (PasswordManagerException &ex) {
         print_exception(ex);
     } catch (std::exception &ex) {
         print_exception(ex);
         exit(EXIT_FAILURE);
     }
+
+    return EXIT_FAILURE;
 }
 
 void create_password(PasswordManager &passmg) {
@@ -243,4 +261,8 @@ void remove_password(PasswordManager &passmg) {
     passmg.remove(title);
 
     // TODO MUST check if password has been deleted and pring message
+}
+
+static void print_banner() {
+    std::cout << get_version() << '\n' << "type 'help' to display help menu\n";
 }
