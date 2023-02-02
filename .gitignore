@@ -44,3 +44,6 @@ build
 
 # vim session
 *.vim
+
+pkg/*
+*.zst
