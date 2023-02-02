@@ -62,6 +62,7 @@ TEST(PasswordManager, CRUD) {
 
     passmg.signup("username", "password");
 
+    EXPECT_EQ(passmg.get_username().compare("username"), 0);
     EXPECT_EQ(passmg.list().size(), 0);
 
     passmg.create("facebook", "face001");
@@ -86,9 +87,11 @@ TEST(PasswordManager, CRUD) {
 
     passmg.signup("username2", "password");
 
+    EXPECT_EQ(passmg.get_username().compare("username2"), 0);
     EXPECT_EQ(passmg.list().size(), 0);
 
     passmg.login("username", "password");
 
+    EXPECT_EQ(passmg.get_username().compare("username"), 0);
     EXPECT_EQ(passmg.list().size(), 1);
 }
