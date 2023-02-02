@@ -198,8 +198,8 @@ cxxopts::ParseResult parse_options(int argc, const char *const *argv) {
 }
 
 void check_actions(cxxopts::ParseResult &results) {
-    std::array<std::string, 5> actions = {"list", "create", "get", "remove",
-                                          "interactive"};
+    std::array<std::string, 6> actions = {"list",   "create",      "get",
+                                          "remove", "interactive", "version"};
     std::size_t count = 0;
 
     for (auto &action : actions) {
