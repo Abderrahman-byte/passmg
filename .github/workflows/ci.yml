@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "v2.0" ]
+    branches: [ "v2.0.x", "master" ]
   pull_request:
-    branches: [ "v2.0" ]
+    branches: [ "v2.0.x", "master" ]
 
 env:
   BUILD_TYPE: Release
