@@ -25,6 +25,7 @@ void try_signup(PasswordManager &passmg, std::string username,
 void print_menu();
 void create_password(PasswordManager &passmg);
 void list_passwords(PasswordManager &passmg);
+void get_password(PasswordManager &passmg);
 
 int main(int argc, const char *const *argv) {
     cxxopts::ParseResult results = parse_options(argc, argv);
@@ -114,6 +115,8 @@ int interactive_mode(PasswordManager &passmg) {
             create_password(passmg);
         } else if (cmd.compare("list") == 0) {
             list_passwords(passmg);
+        } else if (cmd.compare("get") == 0) {
+            get_password(passmg);
         }
     }
 
@@ -128,11 +131,11 @@ void auth_menu(PasswordManager &passmg) {
             print_auth_menu();
         } else if (input.compare("quit") == 0 || input.compare("q") == 0) {
             exit(EXIT_SUCCESS);
-        } else if (input.compare("1") == 0 || input.compare("login") == 0) {
+        } else if (input.compare("login") == 0) {
             std::string username = prompt("Enter username : ");
             std::string password = prompt_password();
             try_login(passmg, username, password);
-        } else if (input.compare("2") == 0 || input.compare("signup") == 0) {
+        } else if (input.compare("signup") == 0) {
             std::string username = prompt("Enter username : ");
             std::string password = prompt_password();
             try_signup(passmg, username, password);
@@ -141,18 +144,18 @@ void auth_menu(PasswordManager &passmg) {
 }
 
 void print_auth_menu() {
-    std::cout << "1 - Login" << '\n'
-              << "2 - Create account" << '\n'
-              << "h - help" << '\n'
-              << "q - quit" << '\n';
+    std::cout << "signup - Create account" << '\n'
+              << "login" << '\n'
+              << "help" << '\n'
+              << "quit" << '\n';
 }
 
 void print_menu() {
     std::cout << "help - show help\n"
-              << "quit\n"
               << "create - create a new password\n"
               << "get - get content of a password\n"
-              << "list - list saved passwords\n";
+              << "list - list saved passwords\n"
+              << "quit\n";
 }
 
 void try_login(PasswordManager &passmg, std::string username,
@@ -204,9 +207,25 @@ void create_password(PasswordManager &passmg) {
 }
 
 void list_passwords(PasswordManager &passmg) {
-    std::vector<struct password_t> pws = passmg.list();
+    std::vector<struct password_t> pws = passmg.list(true);
 
     for (auto pw : pws) {
-        std::cout << password_str(pw, false) << "\n++++++++++++++++++" << '\n';
+        std::cout << password_str(pw, false) << '\n' << repeat("+", 20) << '\n';
     }
+}
+
+void get_password(PasswordManager &passmg) {
+    std::string title = prompt("Enter password title : ");
+    struct password_t password = {0};
+
+    if (title.length() <= 0) return;
+
+    password = passmg.get(title);
+
+    if (password.id <= 0) {
+        std::cerr << "[ERROR] Password doesn't exist\n";
+        return;
+    }
+
+    std::cout << password_str(password, true) << '\n';
 }
