@@ -1,8 +1,10 @@
+#include <array>
 #include <cstddef>
 #include <cstdlib>
 #include <exception>
 #include <filesystem>
 #include <iostream>
+#include <stdexcept>
 #include <vector>
 
 #include "cxxopts.hpp"
@@ -29,6 +31,7 @@ static void list_passwords(PasswordManager &passmg);
 static void get_password(PasswordManager &passmg);
 static void remove_password(PasswordManager &passmg);
 static void print_banner();
+static void check_actions(cxxopts::ParseResult &results);
 
 int main(int argc, const char *const *argv) {
     cxxopts::ParseResult results = parse_options(argc, argv);
@@ -100,7 +103,7 @@ int main(int argc, const char *const *argv) {
         return EXIT_SUCCESS;
     }
 
-    if (results.count("get") > 0) {
+    if (results.count("get")) {
         std::string title = results.count("title") > 0
                                 ? results["title"].as<std::string>()
                                 : "";
@@ -125,7 +128,7 @@ int main(int argc, const char *const *argv) {
         return EXIT_SUCCESS;
     }
 
-    if (results.count("remove") > 0) {
+    if (results.count("remove")) {
         std::string title = results.count("title") > 0
                                 ? results["title"].as<std::string>()
                                 : "";
@@ -183,7 +186,34 @@ cxxopts::ParseResult parse_options(int argc, const char *const *argv) {
         exit(EXIT_SUCCESS);
     }
 
+    try {
+        check_actions(results);
+    } catch (std::exception &ex) {
+        print_exception(ex);
+        /* std::cerr << options.help(); */
+        exit(EXIT_FAILURE);
+    }
+
     return results;
+}
+
+void check_actions(cxxopts::ParseResult &results) {
+    std::array<std::string, 5> actions = {"list", "create", "get", "remove",
+                                          "interactive"};
+    std::size_t count = 0;
+
+    for (auto &action : actions) {
+        if (results.count(action)) count++;
+    }
+
+    if (count <= 0) {
+        throw std::logic_error(
+            "Must provide action : get, create, list, remove");
+    }
+
+    if (count > 1) {
+        throw std::logic_error("More than one action");
+    }
 }
 
 int interactive_mode(PasswordManager &passmg) {
