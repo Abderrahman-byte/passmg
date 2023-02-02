@@ -69,6 +69,36 @@ int main(int argc, const char *const *argv) {
         return EXIT_SUCCESS;
     }
 
+    if (results.count("create")) {
+        std::string title = results.count("title") > 0
+                                ? results["title"].as<std::string>()
+                                : "";
+        std::string content = results.count("content") > 0
+                                  ? results["content"].as<std::string>()
+                                  : "";
+
+        if (title.length() <= 0) {
+            std::cerr << "[ERROR] you must provide a title using --title\n";
+            return EXIT_FAILURE;
+        }
+
+        if (content.length() <= 0) {
+            std::cerr << "[ERROR] you must provide the password content using "
+                         "--content\n";
+            return EXIT_FAILURE;
+        }
+
+        try {
+            struct password_t pw = passmg.create(title, content);
+            std::cout << "[INFO] password has been created\n"
+                      << password_str(pw, true) << '\n';
+        } catch (std::exception &ex) {
+            print_exception(ex);
+        }
+
+        return EXIT_SUCCESS;
+    }
+
     return EXIT_SUCCESS;
 }
 
@@ -82,14 +112,14 @@ cxxopts::ParseResult parse_options(int argc, const char *const *argv) {
         ("i,interactive", "Enter interactive mode")
         ("signup", "Create an account")
         ("l,list", "List saved password")
+        ("c,create", "Create new password")
+        ("title", "Password title", cxxopts::value<std::string>())
+        ("content", "Password content", cxxopts::value<std::string>())
         ("u,username","Authentication username",cxxopts::value<std::string>())
         ("p,password","Authentication password",cxxopts::value<std::string>())
         ("v,version", "show version")
         ("h,help", "show help");
     // clang-format on
-
-    options.parse_positional({"command", "args"});
-    options.positional_help("[command] [argument]");
 
     options.show_positional_help();
 
