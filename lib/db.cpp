@@ -127,9 +127,13 @@ int select_password(sqlite3 *db, std::size_t user_id, std::string key,
 }
 
 int select_user_passwords(sqlite3 *db, std::size_t user_id,
-                          std::vector<struct password_t> &passwords) {
-    std::string query = "SELECT id, title FROM password WHERE user_id = '" +
-                        std::to_string(user_id) + "';";
+                          std::vector<struct password_t> &passwords,
+                          bool with_content = false) {
+    std::string query = "SELECT id, title";
+
+    if (with_content) query += ", content";
+
+    query += "  FROM password WHERE user_id='" + std::to_string(user_id) + "';";
 
     int rc =
         sqlite3_exec(db, query.c_str(), add_password_data, &passwords, NULL);

@@ -154,14 +154,19 @@ struct password_t PasswordManager::get(std::string title) {
     return password;
 }
 
-std::vector<struct password_t> PasswordManager::list() {
+std::vector<struct password_t> PasswordManager::list(bool w_content) {
     if (!is_authenticated()) throw AuthenticationRequired();
 
     std::vector<struct password_t> passwords;
 
-    int rc = select_user_passwords(db, user.id, passwords);
+    int rc = select_user_passwords(db, user.id, passwords, w_content);
 
     if (rc != SQLITE_OK) throw DatabaseException();
+
+    for (auto &pw : passwords) {
+        if (pw.cipher_content.length() > 0)
+            pw.content = decrypt_aes_256_hex(pw.cipher_content, user.pw);
+    }
 
     return passwords;
 }
