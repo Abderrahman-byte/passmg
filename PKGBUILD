@@ -1,4 +1,6 @@
-pkgname=passmg
+# Maintainer: Abderrahman-byte <el.abderrahman00@gmail.com>
+# Contributor: Abderrahman-byte <el.abderrahman00@gmail.com>
+
 pkgver=2.0.0
 pkgrel=1
 pkgdesc="Yet another cli based password manager"
@@ -20,8 +22,8 @@ source=()
 md5sums=()
 
 build() {
-    cmake -S $startdir -B $startdir/build
-    cmake --build $startdir/build 
+    cmake -S $startdir -B $startdir/build -DCMAKE_BUILD_TYPE=Release
+    cmake --build $startdir/build --config Release 
 }
 
 package() {
