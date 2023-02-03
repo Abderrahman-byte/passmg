@@ -1,18 +1,38 @@
-# P A S S
+# Passmg
 
-This mini-project is a command line password manager. (The name is just a place holder)
+A simple cli based password manager with multi-users and interactive shell.
 
-## Instructions to Install
+## Building From Sources
 
-install dependencies :
+### Install dependencies
 
-```shell
-apt install -y libssl-dev libsqlite3-devel // debian-based
-dnf install -y openssl-devel libsqlite3x-devel // for rhel-based
-```
-
-compiling and installing binary files :
+#### rhel-based distros :
 
 ```shell
-make install
+dnf install -y openssl-devel libsqlite3x-devel 
 ```
+
+#### debian-based distros :
+
+```shell
+apt install -y libssl-dev libsqlite3-devel
+```
+
+#### pacman :
+
+```shell
+pacman -S sqlite openssl
+```
+
+### Compiling
+
+```shell
+cmake -S . -B build 
+cmake --build build
+install ./build/src/passmg -D /usr/bin/
+```
+
+## Arch/Manjaro 
+
+[passmg package](https://aur.archlinux.org/packages/passmg) for Arch Linux and derived distros is available via AUR.
+
